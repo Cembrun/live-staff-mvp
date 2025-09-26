@@ -20,6 +20,14 @@ const io = new SocketIOServer(httpServer, {
 const PORT = process.env.PORT || 4000;
 const JWT_SECRET = process.env.JWT_SECRET || 'change_me';
 
+// Initialize database on first run
+try {
+  initDb();
+  console.log('Database initialized successfully');
+} catch (error) {
+  console.log('Database already exists or initialization skipped');
+}
+
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(join(__dirname, 'public')));
