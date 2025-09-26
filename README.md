@@ -67,3 +67,4 @@ npm run dev
 ---
 
 *Entwickelt für optimales Staff-Management auf Tablets* 🚀
+# Railway Deployment Fix - Fri Sep 26 23:26:05 CEST 2025
