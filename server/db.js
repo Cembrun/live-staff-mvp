@@ -20,14 +20,9 @@ export function initDb(){
     const hash = bcrypt.hashSync('admin123', 10);
     db.prepare('INSERT INTO users (username,password_hash,role) VALUES (?,?,?)').run('admin',hash,'admin');
   }
-  const depCount = db.prepare('SELECT COUNT(*) c FROM departments').get().c;
-  if (!depCount){
-    ['UG','EG','OG','Leitstand'].forEach(n=> db.prepare('INSERT INTO departments (name) VALUES (?)').run(n));
-  }
-  const empCount = db.prepare('SELECT COUNT(*) c FROM employees').get().c;
-  if (!empCount){
-    ['Alex','Farida','Marc','Jürgen','Stephanie','Laura','Cem'].forEach(n=> db.prepare('INSERT INTO employees (name,radio,status) VALUES (?,?,?)').run(n,'','active'));
-  }
+  // Don't auto-create departments - let user create their own
+  // Don't auto-create employees - let user create their own
+  
   // Ensure every employee has an assignment row
   const emps = db.prepare('SELECT id FROM employees').all();
   for (const e of emps){
