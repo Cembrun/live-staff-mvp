@@ -1,0 +1,7 @@
+version: 2
+build:
+  command: npm run build
+start:
+  command: npm start
+environment:
+  NODE_ENV: production

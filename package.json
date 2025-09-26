@@ -1,0 +1,25 @@
+{
+  "name": "live-staff-mvp",
+  "version": "1.0.0",
+  "description": "Live Staff Management MVP",
+  "main": "server/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "cd server && node server.js",
+    "build": "cd web && npm install && npm run build",
+    "postbuild": "cp -r web/dist/* server/public/",
+    "railway:start": "npm run build && npm start"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.7.2",
+    "cors": "^2.8.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

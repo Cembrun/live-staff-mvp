@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+.DS_Store
+data.sqlite
+data.sqlite-shm
+data.sqlite-wal
+server-dev.log
