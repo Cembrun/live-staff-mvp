@@ -51,8 +51,7 @@ function pushState(){
   const employees = db.prepare('SELECT * FROM employees').all();
   const departments = db.prepare('SELECT * FROM departments').all();
   const assignments = db.prepare('SELECT * FROM assignments').all();
-  const teams = db.prepare('SELECT * FROM teams').all();
-  io.emit('state', { employees, departments, assignments, teams });
+  io.emit('state', { employees, departments, assignments });
 }
 
 // Auth
@@ -130,31 +129,6 @@ app.post('/api/status', auth, (req,res)=>{
   const { employee_id, status } = req.body;
   db.prepare('UPDATE employees SET status=? WHERE id=?').run(status, employee_id);
   pushState(); res.json({ ok:true });
-});
-
-// Team Management Endpoints
-app.get('/api/teams', auth, (req, res) => {
-  const teams = db.prepare('SELECT * FROM teams ORDER BY name').all();
-  res.json(teams);
-});
-
-app.post('/api/teams', auth, (req, res) => {
-  const { name } = req.body;
-  if (!name) return res.status(400).json({ error: 'Team-Name erforderlich' });
-  
-  const result = db.prepare('INSERT INTO teams (name) VALUES (?)').run(name);
-  pushState();
-  res.json({ id: result.lastInsertRowid, name });
-});
-
-app.delete('/api/teams/:id', auth, (req, res) => {
-  const { id } = req.params;
-  // Mitarbeiter von Team entfernen
-  db.prepare('UPDATE employees SET team_id = NULL WHERE team_id = ?').run(id);
-  // Team löschen
-  db.prepare('DELETE FROM teams WHERE id = ?').run(id);
-  pushState();
-  res.json({ ok: true });
 });
 
 // Mitarbeiter zu Team zuweisen
@@ -237,8 +211,7 @@ io.on('connection', (socket)=>{
   const employees = db.prepare('SELECT * FROM employees').all();
   const departments = db.prepare('SELECT * FROM departments').all();
   const assignments = db.prepare('SELECT * FROM assignments').all();
-  const teams = db.prepare('SELECT * FROM teams').all();
-  socket.emit('state', { employees, departments, assignments, teams });
+  socket.emit('state', { employees, departments, assignments });
 });
 
 // Serve React app in production
