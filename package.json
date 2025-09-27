@@ -7,8 +7,8 @@
   "scripts": {
     "start": "node server/server.js",
     "dev": "cd server && node server.js",
-    "build": "cd web && npm install && npm run build",
-    "postbuild": "mkdir -p server/public && cp -r web/dist/* server/public/",
+    "build": "cd web && npm ci && npm run build && cd .. && npm run postbuild",
+    "postbuild": "rm -rf server/public && mkdir -p server/public && cp -r web/dist/* server/public/",
     "railway:start": "npm run build && npm start"
   },
   "dependencies": {
