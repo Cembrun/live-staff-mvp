@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Live Staff - Mobile</title>
+    <title>📱 Live Staff - Mobile Version</title>
     <style>
         * {
             margin: 0;
@@ -17,6 +17,23 @@
             min-height: 100vh;
             padding: 10px;
             font-size: 16px;
+            position: relative;
+        }
+        
+        /* Mobile Version Indicator */
+        body::before {
+            content: "📱 MOBILE";
+            position: fixed;
+            top: 5px;
+            left: 5px;
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 9999;
+            opacity: 0.9;
         }
         
         .mobile-container {
@@ -339,11 +356,14 @@
     <div class="mobile-container">
         <!-- Header -->
         <div class="header">
+            <div style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 8px 15px; border-radius: 15px; margin-bottom: 15px; text-align: center; font-weight: bold; font-size: 14px;">
+                📱 MOBILE VERSION - Optimiert für Smartphones
+            </div>
             <h1>📱 Live Staff Mobile</h1>
             <div id="user-info" class="hidden">
                 <p>Angemeldet als: <strong id="username"></strong></p>
-                <a href="/?desktop=true" style="color: #667eea; text-decoration: none; font-size: 14px; margin-top: 5px; display: inline-block;">
-                    🖥️ Desktop Version
+                <a href="/?desktop=true" style="color: #667eea; text-decoration: none; font-size: 14px; margin-top: 5px; display: inline-block; background: white; padding: 5px 10px; border-radius: 10px; border: 2px solid #667eea;">
+                    🖥️ Zur Desktop Version wechseln
                 </a>
             </div>
             <div class="stats">
@@ -433,12 +453,26 @@
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            // Show mobile welcome message
+            showMobileWelcome();
+            
             // Check if already logged in
             const token = localStorage.getItem('token');
             if (token) {
                 verifyToken(token);
             }
         });
+        
+        // Show mobile welcome message
+        function showMobileWelcome() {
+            const hasSeenWelcome = localStorage.getItem('mobile-welcome-seen');
+            if (!hasSeenWelcome) {
+                setTimeout(() => {
+                    alert('📱 Willkommen zur Mobile Version!\n\n✅ Optimiert für Smartphones\n✅ Große Buttons & Touch-freundlich\n✅ Alle Bereiche untereinander\n\nTipp: Über den Link oben kannst du zur Desktop-Version wechseln.');
+                    localStorage.setItem('mobile-welcome-seen', 'true');
+                }, 500);
+            }
+        }
         
         // Login function
         async function login() {
