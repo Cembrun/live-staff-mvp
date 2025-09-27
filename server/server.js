@@ -63,6 +63,7 @@ function pushState(){
   const employees = db.prepare('SELECT * FROM employees').all();
   const departments = db.prepare('SELECT * FROM departments').all();
   const assignments = db.prepare('SELECT * FROM assignments').all();
+  console.log('📡 Broadcasting state update via WebSocket - Employees:', employees.length, 'Departments:', departments.length);
   io.emit('state', { employees, departments, assignments });
 }
 
@@ -251,10 +252,16 @@ io.use((socket,next)=>{
   }catch{ next(new Error('unauthorized')); }
 });
 io.on('connection', (socket)=>{
+  console.log('🔌 New WebSocket connection established');
   const employees = db.prepare('SELECT * FROM employees').all();
   const departments = db.prepare('SELECT * FROM departments').all();
   const assignments = db.prepare('SELECT * FROM assignments').all();
+  console.log('📡 Sending initial state to new client - Employees:', employees.length, 'Departments:', departments.length);
   socket.emit('state', { employees, departments, assignments });
+  
+  socket.on('disconnect', () => {
+    console.log('❌ WebSocket connection closed');
+  });
 });
 
 // Serve React app in production

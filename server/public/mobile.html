@@ -856,26 +856,48 @@
         
         // WebSocket connection - Fixed for Render.com
         function connectWebSocket() {
+            console.log('🔌 Attempting WebSocket connection...');
             const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const wsUrl = `${wsProtocol}//${window.location.host}`;
+            console.log('🔌 WebSocket URL:', wsUrl);
             
-            socket = new WebSocket(wsUrl);
-            
-            socket.onopen = () => {
-                console.log('WebSocket verbunden');
-            };
-            
-            socket.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                if (data.type === 'update') {
-                    loadData(); // Reload data on updates
-                }
-            };
-            
-            socket.onclose = () => {
-                console.log('WebSocket getrennt, versuche Neuverbindung...');
+            try {
+                socket = new WebSocket(wsUrl);
+                
+                socket.onopen = () => {
+                    console.log('✅ WebSocket verbunden successfully!');
+                };
+                
+                socket.onmessage = (event) => {
+                    console.log('📩 WebSocket message received:', event.data);
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('📩 Parsed WebSocket data:', data);
+                        
+                        // Handle both 'update' and 'state' messages
+                        if (data.type === 'update' || data.employees || data.departments) {
+                            console.log('🔄 Received data update, reloading...');
+                            loadData(); // Reload data on updates
+                        }
+                    } catch (error) {
+                        console.error('💥 WebSocket message parsing error:', error);
+                    }
+                };
+                
+                socket.onclose = (event) => {
+                    console.log('❌ WebSocket getrennt:', event.code, event.reason);
+                    console.log('🔄 Versuche Neuverbindung in 3 Sekunden...');
+                    setTimeout(connectWebSocket, 3000);
+                };
+                
+                socket.onerror = (error) => {
+                    console.error('💥 WebSocket error:', error);
+                };
+                
+            } catch (error) {
+                console.error('💥 WebSocket connection error:', error);
                 setTimeout(connectWebSocket, 3000);
-            };
+            }
         }
         
         // Handle enter key in login
