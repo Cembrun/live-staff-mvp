@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { api } from '../api';
 
 export default function Login({ onLogin }){
-  const [username, setU] = useState('admin');
-  const [password, setP] = useState('admin123');
+  const [username, setU] = useState('');
+  const [password, setP] = useState('');
   const [err, setErr] = useState('');
 
   async function submit(e){
@@ -30,7 +30,6 @@ export default function Login({ onLogin }){
           <input type="password" className="w-full border border-black/10 dark:border-white/10 rounded-xl px-3 py-2 bg-white dark:bg-neutral-900 dark:text-white" value={password} onChange={e=>setP(e.target.value)} />
         </div>
         <button className="w-full bg-black text-white py-2 rounded-xl hover:opacity-90">Login</button>
-        <p className="text-xs text-gray-500 text-center">Demo: admin / admin123</p>
       </form>
     </div>
   );
