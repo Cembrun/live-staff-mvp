@@ -1,7 +1,7 @@
 {
   "name": "live-staff-mvp",
-  "version": "2.0.0",
-  "description": "Live Staff Management MVP with Role-Based Authentication",
+  "version": "2.1.0",
+  "description": "Live Staff Management MVP with Role-Based Authentication and Perfect Sizing",
   "main": "server/server.js",
   "type": "module",
   "scripts": {

@@ -23,7 +23,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'change_me';
 // Initialize database on first run
 try {
   initDb();
-  console.log('Database initialized successfully');
+  console.log('🎯 Database initialized successfully - Live Staff MVP v2.1.0');
 } catch (error) {
   console.log('Database already exists or initialization skipped');
 }
