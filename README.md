@@ -1,6 +1,6 @@
-# 🎯 Live Staff MVP
+# 🎯 Live Staff MVP v2.0
 
-Ein modernes Staff-Management System für Tablets, optimiert für Live-Updates und faire Mitarbeiterverteilung.
+Ein modernes Staff-Management System für Tablets, optimiert für Live-Updates und faire Mitarbeiterverteilung mit rollenbasierter Authentifizierung.
 
 ## ✨ Features
 
@@ -8,6 +8,8 @@ Ein modernes Staff-Management System für Tablets, optimiert für Live-Updates u
 - **🏢 Bereichsverwaltung** - Verschiedene Arbeitsbereiche mit Kapazitätslimits
 - **🎯 Faire Verteilung** - Intelligenter Algorithmus für automatische Zuweisung
 - **⚡ Live-Updates** - Real-time Synchronisation zwischen allen Geräten
+- **🔐 Rollenbasierte Authentifizierung** - Admin/Viewer Berechtigungen
+- **📱 Responsive Design** - Optimiert für Tablets und Desktop
 - **📱 Tablet-optimiert** - Kompaktes Design für Touch-Bedienung
 - **🔒 Authentifizierung** - Sicheres Login-System
 
