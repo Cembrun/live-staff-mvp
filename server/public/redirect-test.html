@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Redirect Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #1e3a8a;
+            color: white;
+            text-align: center;
+        }
+        .info {
+            background: #1f2937;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+        }
+        .mobile {
+            background: #10b981;
+            color: white;
+        }
+        .desktop {
+            background: #f59e0b;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Mobile Redirect Test</h1>
+    
+    <div id="device-info" class="info">
+        <h2>📱 Geräteerkennung</h2>
+        <p><strong>User Agent:</strong> <span id="ua"></span></p>
+        <p><strong>Bildschirmbreite:</strong> <span id="width"></span>px</p>
+        <p><strong>Touch-Support:</strong> <span id="touch"></span></p>
+        <p><strong>Erkannt als:</strong> <span id="device-type"></span></p>
+    </div>
+    
+    <div class="info">
+        <h2>🔄 Test Links</h2>
+        <p><a href="/mobile.html" style="color: #10b981;">🔗 Direkt zur Mobile Version</a></p>
+        <p><a href="/?desktop=true" style="color: #f59e0b;">🔗 Desktop Version erzwingen</a></p>
+        <p><a href="/mobile-test.html" style="color: #ef4444;">🔗 Mobile Test Seite</a></p>
+    </div>
+    
+    <div class="info">
+        <h2>⚠️ Falls Mobile Weiterleitung nicht funktioniert:</h2>
+        <p>Die automatische Weiterleitung sollte dich zur mobile.html bringen.</p>
+        <p>Wenn du diese Seite siehst, funktioniert die Weiterleitung NICHT.</p>
+        <p><strong>Verwende dann den direkten Link oben ↑</strong></p>
+    </div>
+
+    <script>
+        // Device Info
+        document.getElementById('ua').textContent = navigator.userAgent;
+        document.getElementById('width').textContent = window.innerWidth;
+        document.getElementById('touch').textContent = 'ontouchstart' in window ? 'Ja' : 'Nein';
+        
+        // Mobile Detection (same as main page)
+        function isMobileDevice() {
+            const ua = navigator.userAgent.toLowerCase();
+            const isMobile = /android|iphone|ipad|ipod|blackberry|windows phone|mobile|tablet/.test(ua) ||
+                            window.innerWidth <= 768 ||
+                            'ontouchstart' in window ||
+                            navigator.maxTouchPoints > 0;
+            return isMobile;
+        }
+        
+        const deviceType = document.getElementById('device-type');
+        const deviceInfo = document.getElementById('device-info');
+        
+        if (isMobileDevice()) {
+            deviceType.textContent = '📱 MOBILE GERÄT';
+            deviceInfo.classList.add('mobile');
+            
+            // Auto-redirect nach 3 Sekunden
+            setTimeout(() => {
+                if (confirm('📱 Mobile Gerät erkannt! Zur Mobile Version weiterleiten?')) {
+                    window.location.href = '/mobile.html';
+                }
+            }, 1000);
+        } else {
+            deviceType.textContent = '🖥️ DESKTOP';
+            deviceInfo.classList.add('desktop');
+        }
+    </script>
+</body>
+</html>

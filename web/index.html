@@ -8,22 +8,26 @@
     <meta name="pragma" content="no-cache">
     <meta name="expires" content="0">
     <script>
-      // Mobile Detection & Redirect
-      function isMobile() {
-        const userAgent = navigator.userAgent.toLowerCase();
-        const mobileKeywords = ['android', 'iphone', 'ipod', 'ipad', 'blackberry', 'windows phone'];
-        return mobileKeywords.some(keyword => userAgent.includes(keyword)) || 
-               window.innerWidth <= 768 || 
-               'ontouchstart' in window;
+      // Mobile Detection & Redirect - AGGRESSIVE VERSION
+      function isMobileDevice() {
+        const ua = navigator.userAgent.toLowerCase();
+        const isMobile = /android|iphone|ipad|ipod|blackberry|windows phone|mobile|tablet/.test(ua) ||
+                        window.innerWidth <= 768 ||
+                        'ontouchstart' in window ||
+                        navigator.maxTouchPoints > 0;
+        console.log('Mobile detection:', isMobile, 'UA:', ua, 'Width:', window.innerWidth);
+        return isMobile;
       }
       
-      // Redirect mobile users to mobile.html unless they explicitly want desktop
-      if (isMobile() && !window.location.search.includes('desktop=true')) {
-        // Check if we're not already on mobile.html
-        if (!window.location.pathname.includes('mobile.html')) {
-          window.location.href = window.location.origin + '/mobile.html';
+      // Immediate redirect on mobile
+      (function() {
+        if (isMobileDevice() && !window.location.search.includes('desktop=true')) {
+          console.log('Redirecting to mobile version...');
+          const mobileUrl = window.location.origin.replace(':5173', ':3000') + '/mobile.html';
+          console.log('Mobile URL:', mobileUrl);
+          window.location.replace(mobileUrl);
         }
-      }
+      })();
     </script>
   </head>
   <body class="dark:bg-neutral-900 bg-slate-50">
@@ -37,8 +41,11 @@
     
     <script>
       // Show mobile link on desktop
-      if (!isMobile()) {
-        document.getElementById('mobile-link').style.display = 'inline-block';
+      if (typeof isMobileDevice === 'function' && !isMobileDevice()) {
+        setTimeout(() => {
+          const link = document.getElementById('mobile-link');
+          if (link) link.style.display = 'inline-block';
+        }, 100);
       }
     </script>
   </body>
