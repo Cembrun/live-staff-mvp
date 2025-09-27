@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📱 MOBILE TEST</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: red;
+            color: white;
+            text-align: center;
+            font-size: 24px;
+        }
+        .big-box {
+            background: yellow;
+            color: black;
+            padding: 40px;
+            margin: 20px 0;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 32px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔴 MOBILE TEST SEITE 🔴</h1>
+    <div class="big-box">
+        📱 DU BIST AUF DER MOBILE VERSION!
+    </div>
+    <p>Wenn du diesen roten Hintergrund siehst, funktioniert die mobile Weiterleitung!</p>
+    <p>Zeit: <span id="time"></span></p>
+    
+    <script>
+        document.getElementById('time').textContent = new Date().toLocaleTimeString();
+        alert('📱 MOBILE TEST: Du siehst die mobile Version!');
+    </script>
+</body>
+</html>
