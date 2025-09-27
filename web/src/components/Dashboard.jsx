@@ -122,30 +122,38 @@ export default function Dashboard({ state, api, user }){
         )}
       </section>
 
-      {/* Mobile Layout: Alles untereinander */}
-      <section className="flex flex-col gap-2 flex-1 min-h-0 lg:hidden">
-        <DepartmentColumn title="Mitarbeiter" dept={null}
-          employees={empByDept.get('employees') || []}
-          onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
-          onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null} 
-          onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isEmployeeList={true} isAdmin={isAdmin} />
-        
-        <DepartmentColumn title="Pause" dept={{ id: null }}
-          employees={empByDept.get('break') || []}
-          onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
-          onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null} 
-          onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isAdmin={isAdmin} />
+      {/* SMARTPHONE ONLY: Alle Bereiche strikt untereinander - 100% Breite */}
+      <section className="block lg:hidden">
+        <div className="w-full space-y-4">
+          <div className="w-full">
+            <DepartmentColumn title="Mitarbeiter" dept={null}
+              employees={empByDept.get('employees') || []}
+              onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
+              onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null} 
+              onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isEmployeeList={true} isAdmin={isAdmin} />
+          </div>
+          
+          <div className="w-full">
+            <DepartmentColumn title="Pause" dept={{ id: null }}
+              employees={empByDept.get('break') || []}
+              onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
+              onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null} 
+              onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isAdmin={isAdmin} />
+          </div>
 
-        {departments.map(d=> (
-          <DepartmentColumn key={d.id} title={d.name} dept={d}
-            employees={empByDept.get(d.id) || []}
-            onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
-            onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null}
-            onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isAdmin={isAdmin} />
-        ))}
+          {departments.map(d=> (
+            <div key={d.id} className="w-full">
+              <DepartmentColumn title={d.name} dept={d}
+                employees={empByDept.get(d.id) || []}
+                onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
+                onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null}
+                onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isAdmin={isAdmin} />
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* Desktop Layout: Sidebar + Grid */}
+      {/* DESKTOP/TABLET: Grid Layout */}
       <section className="hidden lg:grid lg:grid-cols-[320px_1fr] gap-2 flex-1 min-h-0">
         <div className="flex flex-col gap-2">
           <DepartmentColumn title="Mitarbeiter" dept={null}
@@ -161,7 +169,7 @@ export default function Dashboard({ state, api, user }){
             onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isAdmin={isAdmin} />
         </div>
         
-        <div className="grid gap-2 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5">
+        <div className="grid gap-2 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {departments.map(d=> (
             <DepartmentColumn key={d.id} title={d.name} dept={d}
               employees={empByDept.get(d.id) || []}
