@@ -122,35 +122,52 @@ export default function Dashboard({ state, api, user }){
         )}
       </section>
 
-      {/* SMARTPHONE ONLY: ABSOLUT KEINE NEBENEINANDER - GARANTIERT UNTEREINANDER */}
-      <section className="block lg:hidden" style={{display: 'block', width: '100%'}}>
-        <div className="w-full max-w-full space-y-6" style={{display: 'flex', flexDirection: 'column', width: '100%'}}>
-          <div className="w-full max-w-full" style={{width: '100%', display: 'block'}}>
-            <DepartmentColumn title="Mitarbeiter" dept={null}
-              employees={empByDept.get('employees') || []}
+      {/* MOBILE ONLY - BRUTALER CSS ANSATZ */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @media (max-width: 1023px) {
+          .mobile-department-container {
+            display: flex !important;
+            flex-direction: column !important;
+            width: 100% !important;
+            max-width: 100% !important;
+          }
+          .mobile-department-item {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-bottom: 24px !important;
+            float: none !important;
+            clear: both !important;
+          }
+        }
+      `}} />
+      
+      <section className="mobile-department-container block lg:hidden">
+        <div className="mobile-department-item">
+          <DepartmentColumn title="Mitarbeiter" dept={null}
+            employees={empByDept.get('employees') || []}
+            onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
+            onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null} 
+            onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isEmployeeList={true} isAdmin={isAdmin} />
+        </div>
+        
+        <div className="mobile-department-item">
+          <DepartmentColumn title="Pause" dept={{ id: null }}
+            employees={empByDept.get('break') || []}
+            onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
+            onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null} 
+            onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isAdmin={isAdmin} />
+        </div>
+
+        {departments.map(d=> (
+          <div key={d.id} className="mobile-department-item">
+            <DepartmentColumn title={d.name} dept={d}
+              employees={empByDept.get(d.id) || []}
               onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
-              onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null} 
-              onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isEmployeeList={true} isAdmin={isAdmin} />
-          </div>
-          
-          <div className="w-full max-w-full" style={{width: '100%', display: 'block'}}>
-            <DepartmentColumn title="Pause" dept={{ id: null }}
-              employees={empByDept.get('break') || []}
-              onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
-              onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null} 
+              onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null}
               onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isAdmin={isAdmin} />
           </div>
-
-          {departments.map(d=> (
-            <div key={d.id} className="w-full max-w-full" style={{width: '100%', display: 'block', clear: 'both'}}>
-              <DepartmentColumn title={d.name} dept={d}
-                employees={empByDept.get(d.id) || []}
-                onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
-                onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null}
-                onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isAdmin={isAdmin} />
-            </div>
-          ))}
-        </div>
+        ))}
       </section>
 
       {/* DESKTOP/TABLET: Grid Layout */}
