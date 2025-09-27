@@ -17,7 +17,9 @@ export default function DepartmentColumn({ title, dept, employees, onDropEmploye
   return (
     <div onDragOver={onDragOver} onDrop={onDrop}
          className={`bg-white/70 dark:bg-neutral-800/40 backdrop-blur border border-black/5 dark:border-white/10 rounded-2xl p-2 hover:border-black/10 dark:hover:border-white/20 transition flex flex-col ${
-           isEmployeeList ? 'min-h-[180px]' : employees.length > 3 ? 'min-h-[120px] md:min-h-[200px] max-h-[50vh] md:max-h-[75vh]' : 'min-h-[120px] md:min-h-[200px]'
+           isEmployeeList ? 'min-h-[180px]' : 
+           employees.length > 3 ? 'min-h-[120px] md:min-h-[200px] md:max-h-[75vh]' : 
+           'min-h-[120px] md:min-h-[200px]'
          }`}>
       <div className="flex-shrink-0 mb-1.5">
         <div className="flex items-center justify-between mb-1">
@@ -89,7 +91,7 @@ export default function DepartmentColumn({ title, dept, employees, onDropEmploye
         </div>
       </div>
       
-      <div className={employees.length > 3 ? "flex-1 overflow-y-auto min-h-0" : "flex-1"}>
+      <div className={employees.length > 3 ? "flex-1 md:overflow-y-auto md:min-h-0" : "flex-1"}>
         {employees.map(emp=> (
           <EmployeeCard key={emp.id} emp={emp}
             onDragStart={(e, emp)=>{ e.dataTransfer.setData('text/plain', JSON.stringify({ empId: emp.id })); onDragStart && onDragStart(e,emp); }}
