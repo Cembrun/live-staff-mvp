@@ -149,16 +149,33 @@ app.post('/api/assign-team', auth, (req, res) => {
 
 app.post('/api/autoAssign', auth, (req,res)=>{
   try {
-    // Alle Zuweisungen zurücksetzen für komplett neue faire Verteilung
-    db.prepare('DELETE FROM assignments').run();
+    // Zuerst: Mitarbeiter aus MANUELLEN Bereichen identifizieren und schützen
+    const manualDepartments = db.prepare('SELECT id FROM departments WHERE auto_assign = 0').all();
+    const protectedAssignments = [];
+    
+    for (const dept of manualDepartments) {
+      const assignments = db.prepare('SELECT * FROM assignments WHERE department_id = ?').all(dept.id);
+      protectedAssignments.push(...assignments);
+    }
+    
+    // Nur Zuweisungen aus AUTO-Bereichen löschen, manuelle bleiben bestehen
+    db.prepare('DELETE FROM assignments WHERE department_id IN (SELECT id FROM departments WHERE auto_assign = 1) OR department_id IS NULL').run();
     
     // Aktuelle Daten laden - nur Bereiche mit auto_assign = 1 für automatische Verteilung
-    const employees = db.prepare('SELECT * FROM employees WHERE status = ?').all('active');
+    const allEmployees = db.prepare('SELECT * FROM employees WHERE status = ?').all('active');
     const departments = db.prepare('SELECT * FROM departments WHERE name != ? AND auto_assign = 1').all('Mitarbeiter');
+    
+    // Nur freie Mitarbeiter verwenden (nicht in manuellen Bereichen zugewiesen)
+    const protectedEmployeeIds = db.prepare(`
+      SELECT DISTINCT employee_id FROM assignments 
+      WHERE department_id IN (SELECT id FROM departments WHERE auto_assign = 0)
+    `).all().map(row => row.employee_id);
+    
+    const employees = allEmployees.filter(emp => !protectedEmployeeIds.includes(emp.id));
     
     if (employees.length === 0) {
       pushState();
-      return res.json({ ok: true, message: 'Keine aktiven Mitarbeiter zum Verteilen' });
+      return res.json({ ok: true, message: 'Keine freien Mitarbeiter zum Verteilen (alle in manuellen Bereichen geschützt)' });
     }
     
     if (departments.length === 0) {

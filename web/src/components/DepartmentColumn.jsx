@@ -42,14 +42,14 @@ export default function DepartmentColumn({ title, dept, employees, onDropEmploye
               />
               <button
                 onClick={() => onToggleAutoAssign && onToggleAutoAssign(dept.id, !dept.auto_assign)}
-                className={`text-[10px] px-2 py-0.5 rounded-full transition ${
+                className={`text-[10px] px-2 py-0.5 rounded-full transition font-semibold ${
                   dept.auto_assign !== false 
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
-                    : 'bg-gray-100 text-gray-500 dark:bg-gray-900/30 dark:text-gray-500'
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-300 dark:border-green-700' 
+                    : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border border-orange-300 dark:border-orange-700'
                 }`}
-                title={dept.auto_assign !== false ? 'Auto-Verteilung EIN' : 'Auto-Verteilung AUS'}
+                title={dept.auto_assign !== false ? 'Auto-Verteilung AKTIV - Klicken zum Sperren' : 'MANUELL GESPERRT - Mitarbeiter bleiben bei Fair-Verteilung'}
               >
-                {dept.auto_assign !== false ? 'AUTO' : 'MANUELL'}
+                {dept.auto_assign !== false ? '🔄 AUTO' : '🔒 MANUAL'}
               </button>
             </div>
           )}
