@@ -21,7 +21,7 @@ export default function DepartmentColumn({ title, dept, employees, onDropEmploye
          }`}>
       <div className="flex-shrink-0 mb-1.5">
         <div className="flex items-center justify-between mb-1">
-          <h3 className="text-sm font-semibold dark:text-white truncate min-w-0 flex-1">{title}</h3>
+          <h3 className="text-base font-bold dark:text-white truncate min-w-0 flex-1">{title}</h3>
           {!dept?.id && !isEmployeeList && <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 dark:text-white ml-2">{employees.length}</span>}
           {isAdmin && dept && dept.id && (
             <button 
