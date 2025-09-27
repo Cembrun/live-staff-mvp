@@ -11,18 +11,18 @@ export default function EmployeeCard({ emp, onDragStart, onSetStatus, onEditRadi
       onDragStart={(e)=> onDragStart(e, emp)}
       className={`group bg-white dark:bg-neutral-800 border border-black/5 dark:border-white/10 rounded-lg p-1.5 mb-1 cursor-grab active:cursor-grabbing shadow-soft transition ${
         isAssigned ? 'opacity-50 bg-gray-100 dark:bg-neutral-700' : ''
-      }`}
+      } touch-manipulation`}
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1">
-          <div className={`w-5 h-5 rounded-md grid place-items-center text-[9px] ${
+        <div className="flex items-center gap-1 min-w-0 flex-1">
+          <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-md grid place-items-center text-[9px] sm:text-[10px] flex-shrink-0 ${
             isAssigned ? 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400' : 'bg-black/10 dark:bg-white/10 dark:text-white'
           }`}>{initials(emp.name)}</div>
-          <div className={`text-xs font-medium ${isAssigned ? 'text-gray-500 dark:text-gray-400' : 'dark:text-white'}`}>{emp.name}</div>
+          <div className={`text-xs sm:text-sm font-medium truncate ${isAssigned ? 'text-gray-500 dark:text-gray-400' : 'dark:text-white'}`}>{emp.name}</div>
         </div>
-        <span className={"text-[8px] px-1 py-0.5 rounded-full "+(emp.status==='break'?'bg-yellow-100 text-yellow-900':'bg-emerald-100 text-emerald-900')}>{emp.status}</span>
+        <span className={"text-[8px] sm:text-[9px] px-1 py-0.5 rounded-full flex-shrink-0 ml-1 "+(emp.status==='break'?'bg-yellow-100 text-yellow-900':'bg-emerald-100 text-emerald-900')}>{emp.status}</span>
       </div>
-      <div className="text-[9px] text-gray-600 dark:text-white/70 mt-1 flex items-center gap-1">
+      <div className="text-[9px] sm:text-[10px] text-gray-600 dark:text-white/70 mt-1 flex items-center gap-1">
         <span>Funk:</span>
         {isAdmin ? (
           <input

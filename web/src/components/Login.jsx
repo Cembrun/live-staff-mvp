@@ -17,9 +17,9 @@ export default function Login({ onLogin }){
   }
 
   return (
-    <div className="min-h-screen grid place-items-center dark:bg-neutral-900">
-      <form onSubmit={submit} className="w-full max-w-sm bg-white/70 dark:bg-neutral-800/60 backdrop-blur p-6 rounded-2xl shadow-soft space-y-4 border border-black/5 dark:border-white/10">
-        <h1 className="text-2xl font-semibold text-center dark:text-white">Anmelden</h1>
+    <div className="min-h-screen grid place-items-center dark:bg-neutral-900 p-4">
+      <form onSubmit={submit} className="w-full max-w-sm bg-white/70 dark:bg-neutral-800/60 backdrop-blur p-4 sm:p-6 rounded-2xl shadow-soft space-y-4 border border-black/5 dark:border-white/10">
+        <h1 className="text-xl sm:text-2xl font-semibold text-center dark:text-white">Anmelden</h1>
         {err && <div className="text-red-600 text-sm">{err}</div>}
         <div>
           <label className="text-sm block mb-1 dark:text-white/80">Benutzername</label>

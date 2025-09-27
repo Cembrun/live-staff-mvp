@@ -122,8 +122,8 @@ export default function Dashboard({ state, api, user }){
         )}
       </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-[280px_1fr] lg:grid-cols-[320px_1fr] gap-2 flex-1 min-h-0">
-        <div className="flex flex-col gap-2">{/* Entferne h-full min-h-0 für flexibles Wachstum */}
+      <section className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-2 flex-1 min-h-0">
+        <div className="flex flex-col sm:flex-row lg:flex-col gap-2">
           <DepartmentColumn title="Mitarbeiter" dept={null}
             employees={empByDept.get('employees') || []}
             onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
@@ -138,9 +138,11 @@ export default function Dashboard({ state, api, user }){
         </div>
         
         <div className={`grid gap-2 h-full min-h-0 ${
-          departments.length <= 3 ? `grid-cols-${departments.length}` : 
-          departments.length <= 4 ? 'grid-cols-4' :
-          'grid-cols-5'
+          departments.length <= 1 ? 'grid-cols-1' :
+          departments.length <= 2 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2' :
+          departments.length <= 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 
+          departments.length <= 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' :
+          'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'
         }`}>
           {departments.map(d=> (
             <DepartmentColumn key={d.id} title={d.name} dept={d}
