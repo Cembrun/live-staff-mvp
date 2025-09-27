@@ -356,14 +356,11 @@
     <div class="mobile-container">
         <!-- Header -->
         <div class="header">
-            <div style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 8px 15px; border-radius: 15px; margin-bottom: 15px; text-align: center; font-weight: bold; font-size: 14px;">
-                📱 MOBILE VERSION - Optimiert für Smartphones
-            </div>
             <h1>📱 Live Staff Mobile</h1>
             <div id="user-info" class="hidden">
                 <p>Angemeldet als: <strong id="username"></strong></p>
                 <a href="/?desktop=true" style="color: #667eea; text-decoration: none; font-size: 14px; margin-top: 5px; display: inline-block; background: white; padding: 5px 10px; border-radius: 10px; border: 2px solid #667eea;">
-                    🖥️ Zur Desktop Version wechseln
+                    🖥️ Desktop Version
                 </a>
             </div>
             <div class="stats">
@@ -444,8 +441,8 @@
     </div>
 
     <script>
-        // API Base URL
-        const API_BASE = window.location.origin.replace(':5173', ':3000');
+        // API Base URL - Fixed for Render.com
+        const API_BASE = window.location.origin + '/api';
         
         let currentUser = null;
         let isAdmin = false;
@@ -791,10 +788,10 @@
             }
         }
         
-        // WebSocket connection
+        // WebSocket connection - Fixed for Render.com
         function connectWebSocket() {
             const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${wsProtocol}//${window.location.host.replace(':5173', ':3000')}`;
+            const wsUrl = `${wsProtocol}//${window.location.host}`;
             
             socket = new WebSocket(wsUrl);
             
