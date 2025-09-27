@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import DepartmentColumn from './DepartmentColumn';
 
-export default function Dashboard({ state, api }){
+export default function Dashboard({ state, api, user }){
   const { employees, departments, assignments } = state;
   const [newEmp, setNewEmp] = useState('');
   const [newDep, setNewDep] = useState('');
+  
+  const isAdmin = user?.role === 'admin';
 
   const byEmp = useMemo(()=>{
     const m = new Map();
@@ -73,20 +75,24 @@ export default function Dashboard({ state, api }){
   return (
     <div className="space-y-3 h-screen flex flex-col">
       <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 flex-shrink-0">
-        <div className="bg-white/70 dark:bg-neutral-800/40 backdrop-blur border border-black/5 dark:border-white/10 rounded-2xl p-3">
-          <h3 className="text-sm font-semibold mb-2 dark:text-white">Mitarbeiter anlegen</h3>
-          <div className="flex gap-2">
-            <input className="flex-1 border border-black/10 dark:border-white/10 rounded-xl px-3 py-2 bg-white dark:bg-neutral-900 dark:text-white" placeholder="Name" value={newEmp} onChange={e=>setNewEmp(e.target.value)} />
-            <button className="px-3 rounded-xl border dark:border-white/20 dark:text-white" onClick={addEmployee}>Add</button>
+        {isAdmin && (
+          <div className="bg-white/70 dark:bg-neutral-800/40 backdrop-blur border border-black/5 dark:border-white/10 rounded-2xl p-3">
+            <h3 className="text-sm font-semibold mb-2 dark:text-white">Mitarbeiter anlegen</h3>
+            <div className="flex gap-2">
+              <input className="flex-1 border border-black/10 dark:border-white/10 rounded-xl px-3 py-2 bg-white dark:bg-neutral-900 dark:text-white" placeholder="Name" value={newEmp} onChange={e=>setNewEmp(e.target.value)} />
+              <button className="px-3 rounded-xl border dark:border-white/20 dark:text-white" onClick={addEmployee}>Add</button>
+            </div>
           </div>
-        </div>
-        <div className="bg-white/70 dark:bg-neutral-800/40 backdrop-blur border border-black/5 dark:border-white/10 rounded-2xl p-3">
-          <h3 className="text-sm font-semibold mb-2 dark:text-white">Bereich anlegen</h3>
-          <div className="flex gap-2">
-            <input className="flex-1 border border-black/10 dark:border-white/10 rounded-xl px-3 py-2 bg-white dark:bg-neutral-900 dark:text-white" placeholder="Bereich" value={newDep} onChange={e=>setNewDep(e.target.value)} />
-            <button className="px-3 rounded-xl border dark:border-white/20 dark:text-white" onClick={addDepartment}>Add</button>
+        )}
+        {isAdmin && (
+          <div className="bg-white/70 dark:bg-neutral-800/40 backdrop-blur border border-black/5 dark:border-white/10 rounded-2xl p-3">
+            <h3 className="text-sm font-semibold mb-2 dark:text-white">Bereich anlegen</h3>
+            <div className="flex gap-2">
+              <input className="flex-1 border border-black/10 dark:border-white/10 rounded-xl px-3 py-2 bg-white dark:bg-neutral-900 dark:text-white" placeholder="Bereich" value={newDep} onChange={e=>setNewDep(e.target.value)} />
+              <button className="px-3 rounded-xl border dark:border-white/20 dark:text-white" onClick={addDepartment}>Add</button>
+            </div>
           </div>
-        </div>
+        )}
         <div className="bg-white/70 dark:bg-neutral-800/40 backdrop-blur border border-black/5 dark:border-white/10 rounded-2xl p-3 flex items-center justify-between">
           <div>
             <div className="text-xs text-gray-600 dark:text-white/70">Aktive</div>
@@ -101,32 +107,34 @@ export default function Dashboard({ state, api }){
             <div className="text-xl font-semibold dark:text-white">{departments.length}</div>
           </div>
         </div>
-        <div className="bg-white/70 dark:bg-neutral-800/40 backdrop-blur border border-black/5 dark:border-white/10 rounded-2xl p-3">
-          <h3 className="text-sm font-semibold mb-3 dark:text-white">Aktionen</h3>
-          <div className="flex flex-col gap-2">
-            <button className="w-full px-4 py-3 text-sm rounded-xl bg-green-500 hover:bg-green-600 text-white font-medium shadow-sm transition-colors" onClick={handleAutoAssign}>
-              🎯 Fair verteilen
-            </button>
-            <button className="w-full px-4 py-3 text-sm rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium shadow-sm transition-colors" onClick={()=> api.reset()}>
-              🔄 Alle zurücksetzen
-            </button>
+        {isAdmin && (
+          <div className="bg-white/70 dark:bg-neutral-800/40 backdrop-blur border border-black/5 dark:border-white/10 rounded-2xl p-3">
+            <h3 className="text-sm font-semibold mb-3 dark:text-white">Aktionen</h3>
+            <div className="flex flex-col gap-2">
+              <button className="w-full px-4 py-3 text-sm rounded-xl bg-green-500 hover:bg-green-600 text-white font-medium shadow-sm transition-colors" onClick={handleAutoAssign}>
+                🎯 Fair verteilen
+              </button>
+              <button className="w-full px-4 py-3 text-sm rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium shadow-sm transition-colors" onClick={()=> api.reset()}>
+                🔄 Alle zurücksetzen
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </section>
 
       <section className="grid grid-cols-1 md:grid-cols-[280px_1fr] lg:grid-cols-[320px_1fr] gap-2 flex-1 min-h-0">
         <div className="flex flex-col gap-2">{/* Entferne h-full min-h-0 für flexibles Wachstum */}
           <DepartmentColumn title="Mitarbeiter" dept={null}
             employees={empByDept.get('employees') || []}
-            onDropEmployee={onDropEmployee} onSetStatus={onSetStatus} onEditRadio={onEditRadio} 
-            onDeleteEmployee={onDeleteEmployee} onDeleteDepartment={onDeleteDepartment} 
-            onUpdateCapacity={onUpdateCapacity} onToggleAutoAssign={onToggleAutoAssign} isEmployeeList={true} />
+            onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
+            onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null} 
+            onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isEmployeeList={true} isAdmin={isAdmin} />
           
           <DepartmentColumn title="Pause" dept={{ id: null }}
             employees={empByDept.get('break') || []}
-            onDropEmployee={onDropEmployee} onSetStatus={onSetStatus} onEditRadio={onEditRadio} 
-            onDeleteEmployee={onDeleteEmployee} onDeleteDepartment={onDeleteDepartment} 
-            onUpdateCapacity={onUpdateCapacity} onToggleAutoAssign={onToggleAutoAssign} />
+            onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
+            onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null} 
+            onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isAdmin={isAdmin} />
         </div>
         
         <div className={`grid gap-2 h-full min-h-0 ${
@@ -137,9 +145,9 @@ export default function Dashboard({ state, api }){
           {departments.map(d=> (
             <DepartmentColumn key={d.id} title={d.name} dept={d}
               employees={empByDept.get(d.id) || []}
-              onDropEmployee={onDropEmployee} onSetStatus={onSetStatus} onEditRadio={onEditRadio} 
-              onDeleteEmployee={onDeleteEmployee} onDeleteDepartment={onDeleteDepartment}
-              onUpdateCapacity={onUpdateCapacity} onToggleAutoAssign={onToggleAutoAssign} />
+              onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
+              onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null}
+              onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isAdmin={isAdmin} />
           ))}
         </div>
       </section>

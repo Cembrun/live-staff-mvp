@@ -1,7 +1,7 @@
 import React from 'react';
 import EmployeeCard from './EmployeeCard';
 
-export default function DepartmentColumn({ title, dept, employees, onDropEmployee, onDragStart, onSetStatus, onEditRadio, onDeleteEmployee, onDeleteDepartment, onUpdateCapacity, onToggleAutoAssign, isEmployeeList }){
+export default function DepartmentColumn({ title, dept, employees, onDropEmployee, onDragStart, onSetStatus, onEditRadio, onDeleteEmployee, onDeleteDepartment, onUpdateCapacity, onToggleAutoAssign, isEmployeeList, isAdmin }){
   function onDragOver(e){ 
     e.preventDefault(); 
     e.dataTransfer.dropEffect = "move";
@@ -31,39 +31,62 @@ export default function DepartmentColumn({ title, dept, employees, onDropEmploye
               }`}>
                 {employees.length}/{dept.capacity}
               </span>
-              <input
-                type="number"
-                min="1"
-                max="50"
-                value={dept.capacity || 10}
-                onChange={(e) => onUpdateCapacity && onUpdateCapacity(dept.id, parseInt(e.target.value) || 10)}
-                className="w-12 text-[10px] px-1 py-0.5 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 dark:text-white"
-                title="Max. Kapazität"
-              />
-              <button
-                onClick={() => onToggleAutoAssign && onToggleAutoAssign(dept.id, !dept.auto_assign)}
-                className={`text-[10px] px-2 py-0.5 rounded-full transition font-semibold ${
+              {isAdmin && (
+                <input
+                  type="number"
+                  min="1"
+                  max="50"
+                  value={dept.capacity || 10}
+                  onChange={(e) => onUpdateCapacity && onUpdateCapacity(dept.id, parseInt(e.target.value) || 10)}
+                  className="w-12 text-[10px] px-1 py-0.5 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 dark:text-white"
+                  title="Max. Kapazität"
+                />
+              )}
+              {!isAdmin && (
+                <span className="text-[10px] px-2 py-0.5 text-gray-600 dark:text-gray-400" title="Nur lesend">
+                  Max: {dept.capacity}
+                </span>
+              )}
+              {isAdmin && (
+                <button
+                  onClick={() => onToggleAutoAssign && onToggleAutoAssign(dept.id, !dept.auto_assign)}
+                  className={`text-[10px] px-2 py-0.5 rounded-full transition font-semibold ${
+                    dept.auto_assign === 1 || dept.auto_assign === true
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-2 border-green-400 dark:border-green-500' 
+                      : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-2 border-red-400 dark:border-red-500'
+                  }`}
+                  title={dept.auto_assign === 1 || dept.auto_assign === true ? 'Auto-Verteilung AKTIV - Klicken zum Sperren' : 'MANUELL GESPERRT - Mitarbeiter bleiben bei Fair-Verteilung'}
+                >
+                  {dept.auto_assign === 1 || dept.auto_assign === true ? '🔄 AUTO' : '🔒 MANUAL'}
+                </button>
+              )}
+              {!isAdmin && (
+                <span className={`text-[10px] px-2 py-0.5 rounded-full ${
                   dept.auto_assign === 1 || dept.auto_assign === true
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-2 border-green-400 dark:border-green-500' 
-                    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-2 border-red-400 dark:border-red-500'
-                }`}
-                title={dept.auto_assign === 1 || dept.auto_assign === true ? 'Auto-Verteilung AKTIV - Klicken zum Sperren' : 'MANUELL GESPERRT - Mitarbeiter bleiben bei Fair-Verteilung'}
-              >
-                {dept.auto_assign === 1 || dept.auto_assign === true ? '🔄 AUTO' : '🔒 MANUAL'}
-              </button>
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-400 dark:border-green-500'
+                    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-400 dark:border-red-500'
+                }`} title="Nur lesend">
+                  {dept.auto_assign === 1 || dept.auto_assign === true ? '🔄 AUTO' : '🔒 MANUAL'}
+                </span>
+              )}
+              {!isAdmin && dept.auto_assign !== 1 && dept.auto_assign !== true && (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-400 dark:border-red-500">
+                  🔒 MANUAL
+                </span>
+              )}
             </div>
           )}
           {!dept?.id && !isEmployeeList && <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 dark:text-white">{employees.length}</span>}
-          {dept && dept.id && (
+          {isAdmin && dept && dept.id && (
             <button 
               className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition"
               onClick={() => {
                 if(confirm(`Bereich "${title}" wirklich löschen? Alle Mitarbeiter werden zu "Mitarbeiter" verschoben.`)) {
-                  onDeleteDepartment(dept.id);
+                  onDeleteDepartment && onDeleteDepartment(dept.id);
                 }
               }}
             >
-              ×
+              ✕
             </button>
           )}
         </div>
@@ -74,7 +97,7 @@ export default function DepartmentColumn({ title, dept, employees, onDropEmploye
           <EmployeeCard key={emp.id} emp={emp}
             onDragStart={(e, emp)=>{ e.dataTransfer.setData('text/plain', JSON.stringify({ empId: emp.id })); onDragStart && onDragStart(e,emp); }}
             onSetStatus={onSetStatus} onEditRadio={onEditRadio} onDelete={onDeleteEmployee} 
-            isAssigned={isEmployeeList && emp.isAssigned} />
+            isAssigned={isEmployeeList && emp.isAssigned} isAdmin={isAdmin} />
         ))}
       </div>
     </div>

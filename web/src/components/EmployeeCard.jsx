@@ -4,7 +4,7 @@ function initials(name){
   return name.split(' ').map(s=>s[0]?.toUpperCase()).slice(0,2).join('');
 }
 
-export default function EmployeeCard({ emp, onDragStart, onSetStatus, onEditRadio, onDelete, isAssigned }){
+export default function EmployeeCard({ emp, onDragStart, onSetStatus, onEditRadio, onDelete, isAssigned, isAdmin }){
   return (
     <div
       draggable
@@ -24,18 +24,26 @@ export default function EmployeeCard({ emp, onDragStart, onSetStatus, onEditRadi
       </div>
       <div className="text-[9px] text-gray-600 dark:text-white/70 mt-1 flex items-center gap-1">
         <span>Funk:</span>
-        <input
-          className="border border-black/10 dark:border-white/10 rounded px-1 py-0.5 text-[9px] bg-white dark:bg-neutral-900 dark:text-white w-16"
-          value={emp.radio || ''}
-          onChange={(e)=> onEditRadio(emp, e.target.value)}
-          onClick={(e)=> e.stopPropagation()}
-        />
+        {isAdmin ? (
+          <input
+            className="border border-black/10 dark:border-white/10 rounded px-1 py-0.5 text-[9px] bg-white dark:bg-neutral-900 dark:text-white w-16"
+            value={emp.radio || ''}
+            onChange={(e)=> onEditRadio(emp, e.target.value)}
+            onClick={(e)=> e.stopPropagation()}
+          />
+        ) : (
+          <span className="text-[9px] px-1 py-0.5 bg-gray-100 dark:bg-neutral-700 dark:text-white rounded border border-black/5 dark:border-white/10 w-16">
+            {emp.radio || 'N/A'}
+          </span>
+        )}
       </div>
-      <div className="flex gap-1 mt-1 opacity-0 group-hover:opacity-100 transition">
-        <button className="text-[8px] border rounded px-1 py-0.5 dark:text-white dark:border-white/20" onClick={(e)=>{e.stopPropagation(); onSetStatus(emp,'active');}}>Aktiv</button>
-        <button className="text-[8px] border rounded px-1 py-0.5 dark:text-white dark:border-white/20" onClick={(e)=>{e.stopPropagation(); onSetStatus(emp,'break');}}>Pause</button>
-        <button className="text-[8px] border rounded px-1 py-0.5 text-red-600 border-red-200 dark:text-red-400 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={(e)=>{e.stopPropagation(); if(confirm(`Mitarbeiter "${emp.name}" wirklich löschen?`)) onDelete(emp.id);}}>×</button>
-      </div>
+      {isAdmin && (
+        <div className="flex gap-1 mt-1 opacity-0 group-hover:opacity-100 transition">
+          <button className="text-[8px] border rounded px-1 py-0.5 dark:text-white dark:border-white/20" onClick={(e)=>{e.stopPropagation(); onSetStatus(emp,'active');}}>Aktiv</button>
+          <button className="text-[8px] border rounded px-1 py-0.5 dark:text-white dark:border-white/20" onClick={(e)=>{e.stopPropagation(); onSetStatus(emp,'break');}}>Pause</button>
+          <button className="text-[8px] border rounded px-1 py-0.5 text-red-600 border-red-200 dark:text-red-400 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={(e)=>{e.stopPropagation(); if(confirm(`Mitarbeiter "${emp.name}" wirklich löschen?`)) onDelete(emp.id);}}>×</button>
+        </div>
+      )}
     </div>
   );
 }

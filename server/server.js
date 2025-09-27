@@ -47,6 +47,18 @@ function auth(req,res,next){
   try{ req.user = jwt.verify(token, JWT_SECRET); next(); }
   catch{ return res.status(401).json({error:'Invalid token'}); }
 }
+
+// Admin-only authentication (für Änderungen)
+function authAdmin(req,res,next){
+  const token = (req.headers.authorization||'').replace('Bearer ','').trim();
+  if (!token) return res.status(401).json({error:'No token'});
+  try{ 
+    req.user = jwt.verify(token, JWT_SECRET); 
+    if (req.user.role !== 'admin') return res.status(403).json({error:'Admin-Rechte erforderlich'});
+    next(); 
+  }
+  catch{ return res.status(401).json({error:'Invalid token'}); }
+}
 function pushState(){
   const employees = db.prepare('SELECT * FROM employees').all();
   const departments = db.prepare('SELECT * FROM departments').all();
@@ -62,7 +74,13 @@ app.post('/api/login', async (req,res)=>{
   const bcrypt = (await import('bcryptjs')).default;
   if (!bcrypt.compareSync(password, user.password_hash)) return res.status(401).json({error:'Invalid'});
   const token = jwt.sign({ id:user.id, username:user.username, role:user.role }, JWT_SECRET, { expiresIn:'8h' });
-  res.json({ token });
+  res.json({ token, user: { username: user.username, role: user.role } });
+});
+
+// User info endpoint
+app.get('/api/me', auth, (req,res)=>{
+  const user = db.prepare('SELECT username, role FROM users WHERE id=?').get(req.user.id);
+  res.json(user);
 });
 
 // Protected CRUD
@@ -73,48 +91,48 @@ app.get('/api/state', auth, (req,res)=>{
   res.json({ employees, departments, assignments });
 });
 
-app.post('/api/employees', auth, (req,res)=>{
+app.post('/api/employees', authAdmin, (req,res)=>{
   const { name, radio='' } = req.body;
   const info = db.prepare('INSERT INTO employees (name,radio,status) VALUES (?,?,?)').run(name, radio, 'active');
   db.prepare('INSERT INTO assignments (employee_id, department_id) VALUES (?,NULL)').run(info.lastInsertRowid);
   pushState(); res.json({ id: info.lastInsertRowid });
 });
-app.put('/api/employees/:id', auth, (req,res)=>{
+app.put('/api/employees/:id', authAdmin, (req,res)=>{
   const { name, radio, status } = req.body;
   db.prepare('UPDATE employees SET name=?, radio=?, status=? WHERE id=?').run(name, radio, status, req.params.id);
   pushState(); res.json({ ok:true });
 });
-app.delete('/api/employees/:id', auth, (req,res)=>{
+app.delete('/api/employees/:id', authAdmin, (req,res)=>{
   db.prepare('DELETE FROM employees WHERE id=?').run(req.params.id);
   db.prepare('DELETE FROM assignments WHERE employee_id=?').run(req.params.id);
   pushState(); res.json({ ok:true });
 });
 
-app.post('/api/departments', auth, (req,res)=>{
+app.post('/api/departments', authAdmin, (req,res)=>{
   const { name, capacity = 10 } = req.body;
   const info = db.prepare('INSERT INTO departments (name, capacity) VALUES (?,?)').run(name, capacity);
   pushState(); res.json({ id: info.lastInsertRowid });
 });
-app.put('/api/departments/:id', auth, (req,res)=>{
+app.put('/api/departments/:id', authAdmin, (req,res)=>{
   const { name, capacity } = req.body;
   db.prepare('UPDATE departments SET name=?, capacity=? WHERE id=?').run(name, capacity, req.params.id);
   pushState(); res.json({ ok:true });
 });
 
 // Toggle auto-assignment für Bereiche
-app.put('/api/departments/:id/auto-assign', auth, (req,res)=>{
+app.put('/api/departments/:id/auto-assign', authAdmin, (req,res)=>{
   const { auto_assign } = req.body;
   db.prepare('UPDATE departments SET auto_assign=? WHERE id=?').run(auto_assign ? 1 : 0, req.params.id);
   pushState(); res.json({ ok:true });
 });
 
-app.delete('/api/departments/:id', auth, (req,res)=>{
+app.delete('/api/departments/:id', authAdmin, (req,res)=>{
   db.prepare('DELETE FROM departments WHERE id=?').run(req.params.id);
   db.prepare('UPDATE assignments SET department_id=NULL WHERE department_id=?').run(req.params.id);
   pushState(); res.json({ ok:true });
 });
 
-app.post('/api/assign', auth, (req,res)=>{
+app.post('/api/assign', authAdmin, (req,res)=>{
   const { employee_id, department_id } = req.body;
   
   // Kapazitätsprüfung wenn zu einem Bereich zugewiesen wird
@@ -133,21 +151,21 @@ app.post('/api/assign', auth, (req,res)=>{
   else db.prepare('INSERT INTO assignments (employee_id, department_id) VALUES (?,?)').run(employee_id, department_id);
   pushState(); res.json({ ok:true });
 });
-app.post('/api/status', auth, (req,res)=>{
+app.post('/api/status', authAdmin, (req,res)=>{
   const { employee_id, status } = req.body;
   db.prepare('UPDATE employees SET status=? WHERE id=?').run(status, employee_id);
   pushState(); res.json({ ok:true });
 });
 
 // Mitarbeiter zu Team zuweisen
-app.post('/api/assign-team', auth, (req, res) => {
+app.post('/api/assign-team', authAdmin, (req, res) => {
   const { employee_id, team_id } = req.body;
   db.prepare('UPDATE employees SET team_id = ? WHERE id = ?').run(team_id, employee_id);
   pushState();
   res.json({ ok: true });
 });
 
-app.post('/api/autoAssign', auth, (req,res)=>{
+app.post('/api/autoAssign', authAdmin, (req,res)=>{
   try {
     // Zuerst: Mitarbeiter aus MANUELLEN Bereichen identifizieren und schützen
     const manualDepartments = db.prepare('SELECT id FROM departments WHERE auto_assign = 0').all();
@@ -221,7 +239,7 @@ app.post('/api/autoAssign', auth, (req,res)=>{
   }
 });
 
-app.post('/api/reset', auth, (req,res)=>{
+app.post('/api/reset', authAdmin, (req,res)=>{
   db.prepare('UPDATE assignments SET department_id=NULL').run();
   pushState(); res.json({ ok:true });
 });

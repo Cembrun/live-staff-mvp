@@ -8,6 +8,7 @@ export default function App(){
   const [authed, setAuthed] = useState(!!getToken());
   const [socket, setSocket] = useState(null);
   const [state, setState] = useState({ employees:[], departments:[], assignments:[] });
+  const [user, setUser] = useState(null);
   const [dark, setDark] = useState(true);
 
   useEffect(()=>{
@@ -19,9 +20,17 @@ export default function App(){
     const s = io(api.API_URL, { auth: { token: getToken() } });
     s.on('state', (snap)=> setState(snap));
     setSocket(s);
-    api.state().then(setState).catch(()=>{
-      setAuthed(false); clearToken();
-    });
+    
+    // Lade User-Info und State
+    Promise.all([api.me(), api.state()])
+      .then(([userData, stateData]) => {
+        setUser(userData);
+        setState(stateData);
+      })
+      .catch(()=>{
+        setAuthed(false); clearToken();
+      });
+    
     return ()=> s.close();
   }, [authed]);
 
@@ -35,6 +44,13 @@ export default function App(){
             <div className="w-8 h-8 rounded-xl bg-black dark:bg-white"></div>
             <h1 className="text-lg font-semibold dark:text-white">Live Einsatzübersicht</h1>
             <span className="text-xs px-2 py-1 rounded-full bg-black/5 dark:bg-white/10 dark:text-white">Realtime</span>
+            {user && (
+              <span className={`text-xs px-2 py-1 rounded-full ${
+                user.role === 'admin' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+              }`}>
+                {user.username} ({user.role === 'admin' ? 'Admin' : 'Viewer'})
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <button className="text-sm px-3 py-1.5 rounded-xl border dark:border-white/20 dark:text-white" onClick={()=> setDark(d=>!d)}>
@@ -45,7 +61,7 @@ export default function App(){
         </div>
       </header>
       <main className="max-w-7xl mx-auto px-4 py-6">
-        <Dashboard state={state} api={api} />
+        <Dashboard state={state} api={api} user={user} />
       </main>
     </div>
   );

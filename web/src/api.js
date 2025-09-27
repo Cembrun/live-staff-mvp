@@ -15,6 +15,7 @@ async function req(path, method='GET', body){
 
 export const api = {
   login: (u,p)=> fetch(API_URL+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()),
+  me: ()=> req('/api/me'),
   state: ()=> req('/api/state'),
   createEmployee: (name, radio)=> req('/api/employees','POST',{name,radio}),
   updateEmployee: (id, data)=> req('/api/employees/'+id,'PUT',data),
