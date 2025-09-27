@@ -19,9 +19,9 @@ export default function DepartmentColumn({ title, dept, employees, onDropEmploye
          className={`bg-white/70 dark:bg-neutral-800/40 backdrop-blur border border-black/5 dark:border-white/10 rounded-2xl p-2 hover:border-black/10 dark:hover:border-white/20 transition flex flex-col ${
            isEmployeeList ? 'min-h-[180px]' : 'min-h-[100px] h-[75vh]'
          }`}>
-      <div className="flex items-center justify-between mb-1.5 flex-shrink-0">
-        <h3 className="text-sm font-semibold dark:text-white">{title}</h3>
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between mb-1.5 flex-shrink-0 gap-2">
+        <h3 className="text-sm font-semibold dark:text-white truncate min-w-0 flex-1">{title}</h3>
+        <div className="flex items-center gap-1 flex-shrink-0">
           {dept && dept.id && (
             <div className="flex items-center gap-1">
               <span className={`text-[10px] px-2 py-0.5 rounded-full ${
@@ -38,40 +38,35 @@ export default function DepartmentColumn({ title, dept, employees, onDropEmploye
                   max="50"
                   value={dept.capacity || 10}
                   onChange={(e) => onUpdateCapacity && onUpdateCapacity(dept.id, parseInt(e.target.value) || 10)}
-                  className="w-12 text-[10px] px-1 py-0.5 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 dark:text-white"
+                  className="w-10 text-[10px] px-1 py-0.5 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 dark:text-white text-center"
                   title="Max. Kapazität"
                 />
               )}
               {!isAdmin && (
-                <span className="text-[10px] px-2 py-0.5 text-gray-600 dark:text-gray-400" title="Nur lesend">
-                  Max: {dept.capacity}
+                <span className="text-[10px] px-1 py-0.5 text-gray-600 dark:text-gray-400 w-10 text-center" title="Nur lesend">
+                  {dept.capacity}
                 </span>
               )}
               {isAdmin && (
                 <button
                   onClick={() => onToggleAutoAssign && onToggleAutoAssign(dept.id, !dept.auto_assign)}
-                  className={`text-[10px] px-2 py-0.5 rounded-full transition font-semibold ${
+                  className={`text-[10px] px-1.5 py-0.5 rounded transition font-bold w-6 h-6 flex items-center justify-center ${
                     dept.auto_assign === 1 || dept.auto_assign === true
-                      ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-2 border-green-400 dark:border-green-500' 
-                      : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-2 border-red-400 dark:border-red-500'
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-400 dark:border-green-500' 
+                      : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-400 dark:border-red-500'
                   }`}
                   title={dept.auto_assign === 1 || dept.auto_assign === true ? 'Auto-Verteilung AKTIV - Klicken zum Sperren' : 'MANUELL GESPERRT - Mitarbeiter bleiben bei Fair-Verteilung'}
                 >
-                  {dept.auto_assign === 1 || dept.auto_assign === true ? '🔄 AUTO' : '🔒 MANUAL'}
+                  {dept.auto_assign === 1 || dept.auto_assign === true ? 'A' : 'M'}
                 </button>
               )}
               {!isAdmin && (
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+                <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold w-6 h-6 flex items-center justify-center ${
                   dept.auto_assign === 1 || dept.auto_assign === true
                     ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-400 dark:border-green-500'
                     : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-400 dark:border-red-500'
                 }`} title="Nur lesend">
-                  {dept.auto_assign === 1 || dept.auto_assign === true ? '🔄 AUTO' : '🔒 MANUAL'}
-                </span>
-              )}
-              {!isAdmin && dept.auto_assign !== 1 && dept.auto_assign !== true && (
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-400 dark:border-red-500">
-                  🔒 MANUAL
+                  {dept.auto_assign === 1 || dept.auto_assign === true ? 'A' : 'M'}
                 </span>
               )}
             </div>
