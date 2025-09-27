@@ -8,7 +8,9 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: DB_FILE
+        value: /opt/render/project/data/data.sqlite
     disk:
       name: live-staff-data
-      mountPath: /opt/render/project/src/server
+      mountPath: /opt/render/project/data
       sizeGB: 1

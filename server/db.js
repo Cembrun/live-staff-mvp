@@ -15,14 +15,21 @@ export function initDb(){
   const schemaPath = path.join(__dirname, 'schema.sql');
   const schema = fs.readFileSync(schemaPath, 'utf8');
   db.exec(schema);
-  const userCount = db.prepare('SELECT COUNT(*) c FROM users').get().c;
-  if (userCount === 0){
+  
+  // Ensure admin user exists
+  const adminExists = db.prepare('SELECT COUNT(*) c FROM users WHERE username = ?').get('admin').c;
+  if (adminExists === 0){
     const adminHash = bcrypt.hashSync('admin123', 10);
     db.prepare('INSERT INTO users (username,password_hash,role) VALUES (?,?,?)').run('admin',adminHash,'admin');
-    
+  }
+  
+  // Ensure Bell viewer user exists
+  const bellExists = db.prepare('SELECT COUNT(*) c FROM users WHERE username = ?').get('Bell').c;
+  if (bellExists === 0){
     const bellHash = bcrypt.hashSync('Bell', 10);
     db.prepare('INSERT INTO users (username,password_hash,role) VALUES (?,?,?)').run('Bell',bellHash,'viewer');
   }
+  
   // Don't auto-create departments - let user create their own
   // Don't auto-create employees - let user create their own
   
