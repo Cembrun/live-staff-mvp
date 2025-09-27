@@ -17,7 +17,7 @@ export default function DepartmentColumn({ title, dept, employees, onDropEmploye
   return (
     <div onDragOver={onDragOver} onDrop={onDrop}
          className={`bg-white/70 dark:bg-neutral-800/40 backdrop-blur border border-black/5 dark:border-white/10 rounded-2xl p-2 hover:border-black/10 dark:hover:border-white/20 transition flex flex-col ${
-           isEmployeeList ? 'min-h-[180px] max-h-[45vh] overflow-y-auto' : 'min-h-[100px] max-h-[75vh] overflow-y-auto'
+           isEmployeeList ? 'min-h-[180px]' : 'min-h-[100px] max-h-[75vh] overflow-y-auto'
          }`}>
       <div className="flex items-center justify-between mb-1.5 flex-shrink-0">
         <h3 className="text-sm font-semibold dark:text-white">{title}</h3>

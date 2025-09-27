@@ -114,8 +114,8 @@ export default function Dashboard({ state, api }){
         </div>
       </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-[220px_1fr] lg:grid-cols-[250px_1fr] gap-2 flex-1 min-h-0">
-        <div className="flex flex-col gap-2 h-full min-h-0">
+      <section className="grid grid-cols-1 md:grid-cols-[280px_1fr] lg:grid-cols-[320px_1fr] gap-2 flex-1 min-h-0">
+        <div className="flex flex-col gap-2">{/* Entferne h-full min-h-0 für flexibles Wachstum */}
           <DepartmentColumn title="Mitarbeiter" dept={null}
             employees={empByDept.get('employees') || []}
             onDropEmployee={onDropEmployee} onSetStatus={onSetStatus} onEditRadio={onEditRadio} 
