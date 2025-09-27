@@ -19,9 +19,24 @@ export default function DepartmentColumn({ title, dept, employees, onDropEmploye
          className={`bg-white/70 dark:bg-neutral-800/40 backdrop-blur border border-black/5 dark:border-white/10 rounded-2xl p-2 hover:border-black/10 dark:hover:border-white/20 transition flex flex-col ${
            isEmployeeList ? 'min-h-[180px]' : 'min-h-[100px] h-[75vh]'
          }`}>
-      <div className="flex items-center justify-between mb-1.5 flex-shrink-0 gap-2">
-        <h3 className="text-sm font-semibold dark:text-white truncate min-w-0 flex-1">{title}</h3>
-        <div className="flex items-center gap-1 flex-shrink-0">
+      <div className="flex-shrink-0 mb-1.5">
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="text-sm font-semibold dark:text-white truncate min-w-0 flex-1">{title}</h3>
+          {!dept?.id && !isEmployeeList && <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 dark:text-white ml-2">{employees.length}</span>}
+          {isAdmin && dept && dept.id && (
+            <button 
+              className="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition ml-2"
+              onClick={() => {
+                if(confirm(`Bereich "${title}" wirklich löschen? Alle Mitarbeiter werden zu "Mitarbeiter" verschoben.`)) {
+                  onDeleteDepartment && onDeleteDepartment(dept.id);
+                }
+              }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
+        <div className="flex items-center gap-1 flex-wrap">
           {dept && dept.id && (
             <div className="flex items-center gap-1">
               <span className={`text-[10px] px-2 py-0.5 rounded-full ${
@@ -70,19 +85,6 @@ export default function DepartmentColumn({ title, dept, employees, onDropEmploye
                 </span>
               )}
             </div>
-          )}
-          {!dept?.id && !isEmployeeList && <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 dark:text-white">{employees.length}</span>}
-          {isAdmin && dept && dept.id && (
-            <button 
-              className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition"
-              onClick={() => {
-                if(confirm(`Bereich "${title}" wirklich löschen? Alle Mitarbeiter werden zu "Mitarbeiter" verschoben.`)) {
-                  onDeleteDepartment && onDeleteDepartment(dept.id);
-                }
-              }}
-            >
-              ✕
-            </button>
           )}
         </div>
       </div>
