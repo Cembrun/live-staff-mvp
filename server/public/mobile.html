@@ -383,11 +383,11 @@
         <div id="login-section" class="login-section">
             <h2>🔐 Anmelden</h2>
             <div class="form-group">
-                <label for="username">Benutzername</label>
+                <label for="username-input">Benutzername</label>
                 <input type="text" id="username-input" placeholder="Benutzername eingeben">
             </div>
             <div class="form-group">
-                <label for="password">Passwort</label>
+                <label for="password-input">Passwort</label>
                 <input type="password" id="password-input" placeholder="Passwort eingeben">
             </div>
             <button class="login-btn" onclick="login()">Anmelden</button>
@@ -450,13 +450,23 @@
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Mobile app initializing...');
+            console.log('🌐 Current URL:', window.location.href);
+            console.log('🌐 API_BASE will be:', window.location.origin + '/api');
+            
             // Show mobile welcome message
             showMobileWelcome();
             
             // Check if already logged in
             const token = localStorage.getItem('token');
+            console.log('🔍 Checking for existing token...');
+            console.log('🔑 Token found:', !!token);
+            
             if (token) {
+                console.log('🔑 Found existing token, verifying...');
                 verifyToken(token);
+            } else {
+                console.log('❌ No token found, showing login form');
             }
         });
         
@@ -476,67 +486,103 @@
             const username = document.getElementById('username-input').value;
             const password = document.getElementById('password-input').value;
             
+            console.log('🔐 Login attempt:', username);
+            
             if (!username || !password) {
                 showError('Bitte Benutzername und Passwort eingeben');
                 return;
             }
             
             try {
+                console.log('📡 Sending login request to:', `${API_BASE}/login`);
                 const response = await fetch(`${API_BASE}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
                 
+                console.log('📡 Login response status:', response.status);
                 const data = await response.json();
+                console.log('📡 Login response data:', data);
                 
                 if (response.ok) {
+                    console.log('✅ Login successful, saving token');
                     localStorage.setItem('token', data.token);
                     currentUser = { username, role: data.role };
                     isAdmin = data.role === 'admin';
+                    console.log('👤 User role:', data.role, 'isAdmin:', isAdmin);
                     showMainApp();
                     connectWebSocket();
                     loadData();
                 } else {
+                    console.error('❌ Login failed:', data.error);
                     showError(data.error || 'Login fehlgeschlagen');
                 }
             } catch (error) {
-                showError('Verbindungsfehler');
+                console.error('💥 Login error:', error);
+                showError('Verbindungsfehler: ' + error.message);
             }
         }
         
         // Verify token
         async function verifyToken(token) {
+            console.log('🔍 Verifying token on page load...');
+            console.log('🔑 Token exists:', !!token);
+            console.log('🌐 API_BASE:', API_BASE);
+            
             try {
+                console.log('📡 Sending token verification request...');
                 const response = await fetch(`${API_BASE}/user-info`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 
+                console.log('📡 Token verification response:', response.status);
+                
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('👤 User data received:', data);
                     currentUser = data;
                     isAdmin = data.role === 'admin';
+                    console.log('🔐 User role:', data.role, 'isAdmin:', isAdmin);
+                    
                     showMainApp();
                     connectWebSocket();
                     loadData();
+                    
+                    console.log('✅ Token verification successful');
                 } else {
+                    console.log('❌ Token verification failed, removing token');
                     localStorage.removeItem('token');
+                    currentUser = null;
+                    isAdmin = false;
                 }
             } catch (error) {
+                console.error('💥 Token verification error:', error);
                 localStorage.removeItem('token');
+                currentUser = null;
+                isAdmin = false;
             }
         }
         
         // Show main app
         function showMainApp() {
+            console.log('📱 Showing main app interface...');
+            console.log('👤 Current user:', currentUser);
+            console.log('🔐 Is admin:', isAdmin);
+            
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('main-content').classList.remove('hidden');
             document.getElementById('user-info').classList.remove('hidden');
             document.getElementById('username').textContent = currentUser.username;
             
             if (isAdmin) {
+                console.log('🔧 Showing admin controls');
                 document.getElementById('floating-actions').classList.remove('hidden');
+            } else {
+                console.log('👁️ Hiding admin controls (viewer mode)');
             }
+            
+            console.log('✅ Main app interface ready');
         }
         
         // Show error
@@ -551,23 +597,43 @@
         
         // Load data
         async function loadData() {
+            console.log('📊 Loading data...');
             document.getElementById('loading').classList.remove('hidden');
             
             try {
                 const token = localStorage.getItem('token');
+                console.log('🔑 Using token:', token ? 'Token exists' : 'No token');
+                
+                console.log('📡 Fetching employees and departments...');
                 const [employeesRes, deptsRes] = await Promise.all([
                     fetch(`${API_BASE}/employees`, { headers: { 'Authorization': `Bearer ${token}` } }),
                     fetch(`${API_BASE}/departments`, { headers: { 'Authorization': `Bearer ${token}` } })
                 ]);
                 
+                console.log('📡 Employees response:', employeesRes.status);
+                console.log('📡 Departments response:', deptsRes.status);
+                
+                if (!employeesRes.ok) {
+                    throw new Error(`Employees API error: ${employeesRes.status}`);
+                }
+                if (!deptsRes.ok) {
+                    throw new Error(`Departments API error: ${deptsRes.status}`);
+                }
+                
                 const employees = await employeesRes.json();
                 const departments = await deptsRes.json();
+                
+                console.log('👥 Employees loaded:', employees.length);
+                console.log('🏢 Departments loaded:', departments.length);
                 
                 renderEmployees(employees, departments);
                 updateStats(employees, departments);
                 
+                console.log('✅ Data loading complete');
+                
             } catch (error) {
-                showError('Fehler beim Laden der Daten');
+                console.error('💥 Data loading error:', error);
+                showError('Fehler beim Laden der Daten: ' + error.message);
             } finally {
                 document.getElementById('loading').classList.add('hidden');
             }
