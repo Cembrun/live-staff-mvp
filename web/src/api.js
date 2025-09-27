@@ -22,6 +22,7 @@ export const api = {
   createDepartment: (name, capacity)=> req('/api/departments','POST',{name, capacity}),
   updateDepartment: (id, data)=> req('/api/departments/'+id,'PUT',data),
   deleteDepartment: (id)=> req('/api/departments/'+id,'DELETE'),
+  toggleAutoAssign: (id, auto_assign)=> req('/api/departments/'+id+'/auto-assign','PUT',{auto_assign}),
   assign: (employee_id, department_id)=> req('/api/assign','POST',{employee_id,department_id}),
   setStatus: (employee_id, status)=> req('/api/status','POST',{employee_id,status}),
   autoAssign: ()=> req('/api/autoAssign','POST',{}),

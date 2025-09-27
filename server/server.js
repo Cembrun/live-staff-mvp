@@ -100,6 +100,14 @@ app.put('/api/departments/:id', auth, (req,res)=>{
   db.prepare('UPDATE departments SET name=?, capacity=? WHERE id=?').run(name, capacity, req.params.id);
   pushState(); res.json({ ok:true });
 });
+
+// Toggle auto-assignment für Bereiche
+app.put('/api/departments/:id/auto-assign', auth, (req,res)=>{
+  const { auto_assign } = req.body;
+  db.prepare('UPDATE departments SET auto_assign=? WHERE id=?').run(auto_assign ? 1 : 0, req.params.id);
+  pushState(); res.json({ ok:true });
+});
+
 app.delete('/api/departments/:id', auth, (req,res)=>{
   db.prepare('DELETE FROM departments WHERE id=?').run(req.params.id);
   db.prepare('UPDATE assignments SET department_id=NULL WHERE department_id=?').run(req.params.id);
@@ -144,9 +152,9 @@ app.post('/api/autoAssign', auth, (req,res)=>{
     // Alle Zuweisungen zurücksetzen für komplett neue faire Verteilung
     db.prepare('DELETE FROM assignments').run();
     
-    // Aktuelle Daten laden
+    // Aktuelle Daten laden - nur Bereiche mit auto_assign = 1 für automatische Verteilung
     const employees = db.prepare('SELECT * FROM employees WHERE status = ?').all('active');
-    const departments = db.prepare('SELECT * FROM departments WHERE name != ?').all('Mitarbeiter');
+    const departments = db.prepare('SELECT * FROM departments WHERE name != ? AND auto_assign = 1').all('Mitarbeiter');
     
     if (employees.length === 0) {
       pushState();

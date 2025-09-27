@@ -64,6 +64,9 @@ export default function Dashboard({ state, api }){
     const dept = departments.find(d => d.id === deptId);
     if (dept) await api.updateDepartment(deptId, { name: dept.name, capacity }); 
   }
+  async function onToggleAutoAssign(deptId, autoAssign){ 
+    await api.toggleAutoAssign(deptId, autoAssign); 
+  }
   async function addEmployee(){ if (!newEmp.trim()) return; await api.createEmployee(newEmp.trim(), ''); setNewEmp(''); }
   async function addDepartment(){ if (!newDep.trim()) return; await api.createDepartment(newDep.trim(), 10); setNewDep(''); }
 
@@ -117,13 +120,13 @@ export default function Dashboard({ state, api }){
             employees={empByDept.get('employees') || []}
             onDropEmployee={onDropEmployee} onSetStatus={onSetStatus} onEditRadio={onEditRadio} 
             onDeleteEmployee={onDeleteEmployee} onDeleteDepartment={onDeleteDepartment} 
-            onUpdateCapacity={onUpdateCapacity} isEmployeeList={true} />
+            onUpdateCapacity={onUpdateCapacity} onToggleAutoAssign={onToggleAutoAssign} isEmployeeList={true} />
           
           <DepartmentColumn title="Pause" dept={{ id: null }}
             employees={empByDept.get('break') || []}
             onDropEmployee={onDropEmployee} onSetStatus={onSetStatus} onEditRadio={onEditRadio} 
             onDeleteEmployee={onDeleteEmployee} onDeleteDepartment={onDeleteDepartment} 
-            onUpdateCapacity={onUpdateCapacity} />
+            onUpdateCapacity={onUpdateCapacity} onToggleAutoAssign={onToggleAutoAssign} />
         </div>
         
         <div className={`grid gap-2 h-full min-h-0 ${
@@ -136,7 +139,7 @@ export default function Dashboard({ state, api }){
               employees={empByDept.get(d.id) || []}
               onDropEmployee={onDropEmployee} onSetStatus={onSetStatus} onEditRadio={onEditRadio} 
               onDeleteEmployee={onDeleteEmployee} onDeleteDepartment={onDeleteDepartment}
-              onUpdateCapacity={onUpdateCapacity} />
+              onUpdateCapacity={onUpdateCapacity} onToggleAutoAssign={onToggleAutoAssign} />
           ))}
         </div>
       </section>

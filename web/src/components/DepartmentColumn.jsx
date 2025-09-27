@@ -1,7 +1,7 @@
 import React from 'react';
 import EmployeeCard from './EmployeeCard';
 
-export default function DepartmentColumn({ title, dept, employees, onDropEmployee, onDragStart, onSetStatus, onEditRadio, onDeleteEmployee, onDeleteDepartment, onUpdateCapacity, isEmployeeList }){
+export default function DepartmentColumn({ title, dept, employees, onDropEmployee, onDragStart, onSetStatus, onEditRadio, onDeleteEmployee, onDeleteDepartment, onUpdateCapacity, onToggleAutoAssign, isEmployeeList }){
   function onDragOver(e){ 
     e.preventDefault(); 
     e.dataTransfer.dropEffect = "move";
@@ -40,6 +40,17 @@ export default function DepartmentColumn({ title, dept, employees, onDropEmploye
                 className="w-12 text-[10px] px-1 py-0.5 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 dark:text-white"
                 title="Max. Kapazität"
               />
+              <button
+                onClick={() => onToggleAutoAssign && onToggleAutoAssign(dept.id, !dept.auto_assign)}
+                className={`text-[10px] px-2 py-0.5 rounded-full transition ${
+                  dept.auto_assign !== false 
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                    : 'bg-gray-100 text-gray-500 dark:bg-gray-900/30 dark:text-gray-500'
+                }`}
+                title={dept.auto_assign !== false ? 'Auto-Verteilung EIN' : 'Auto-Verteilung AUS'}
+              >
+                {dept.auto_assign !== false ? 'AUTO' : 'MANUELL'}
+              </button>
             </div>
           )}
           {!dept?.id && !isEmployeeList && <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 dark:text-white">{employees.length}</span>}
