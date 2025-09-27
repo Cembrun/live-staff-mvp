@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Live Staff - Mobile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            font-size: 16px;
+        }
+        
+        .mobile-container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+        }
+        
+        .login-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .login-section h2 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .login-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .department-section {
+            margin-bottom: 25px;
+        }
+        
+        .department-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .department-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .department-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .department-count {
+            background: #667eea;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .department-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid #e1e5e9;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .employee-list {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .employee-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .employee-card.active {
+            border-color: #28a745;
+            background: #e8f5e9;
+        }
+        
+        .employee-card.break {
+            border-color: #ffc107;
+            background: #fff8e1;
+        }
+        
+        .employee-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .employee-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .employee-status {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .employee-status.active {
+            background: #28a745;
+            color: white;
+        }
+        
+        .employee-status.break {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .employee-radio {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .employee-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn.active {
+            background: #28a745;
+            color: white;
+        }
+        
+        .action-btn.break {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .action-btn.delete {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .floating-actions {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .fab {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: #667eea;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .fab:active {
+            transform: scale(0.9);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .error {
+            background: #dc3545;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #666;
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .department-title {
+                font-size: 20px;
+            }
+            
+            .employee-name {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📱 Live Staff Mobile</h1>
+            <div id="user-info" class="hidden">
+                <p>Angemeldet als: <strong id="username"></strong></p>
+                <a href="/?desktop=true" style="color: #667eea; text-decoration: none; font-size: 14px; margin-top: 5px; display: inline-block;">
+                    🖥️ Desktop Version
+                </a>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="active-count">0</div>
+                    <div class="stat-label">Aktiv</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="break-count">0</div>
+                    <div class="stat-label">Pause</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="dept-count">0</div>
+                    <div class="stat-label">Bereiche</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Section -->
+        <div id="login-section" class="login-section">
+            <h2>🔐 Anmelden</h2>
+            <div class="form-group">
+                <label for="username">Benutzername</label>
+                <input type="text" id="username-input" placeholder="Benutzername eingeben">
+            </div>
+            <div class="form-group">
+                <label for="password">Passwort</label>
+                <input type="password" id="password-input" placeholder="Passwort eingeben">
+            </div>
+            <button class="login-btn" onclick="login()">Anmelden</button>
+            <div id="login-error" class="error hidden"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-content" class="hidden">
+            <!-- Mitarbeiter Section -->
+            <div class="department-section">
+                <div class="department-card">
+                    <div class="department-header">
+                        <div class="department-title">👥 Mitarbeiter</div>
+                        <div class="department-count" id="employees-count">0</div>
+                    </div>
+                    <div id="employees-list" class="employee-list">
+                        <!-- Employees will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pause Section -->
+            <div class="department-section">
+                <div class="department-card">
+                    <div class="department-header">
+                        <div class="department-title">☕ Pause</div>
+                        <div class="department-count" id="break-count-detail">0</div>
+                    </div>
+                    <div id="break-list" class="employee-list">
+                        <!-- Break employees will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Departments -->
+            <div id="departments-container">
+                <!-- Departments will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading hidden">
+            <p>⏳ Lade Daten...</p>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div id="floating-actions" class="floating-actions hidden">
+        <button class="fab" onclick="fairDistribute()" title="Fair verteilen">🎯</button>
+        <button class="fab" onclick="resetAll()" title="Alle zurücksetzen">🔄</button>
+    </div>
+
+    <script>
+        // API Base URL
+        const API_BASE = window.location.origin.replace(':5173', ':3000');
+        
+        let currentUser = null;
+        let isAdmin = false;
+        let socket = null;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if already logged in
+            const token = localStorage.getItem('token');
+            if (token) {
+                verifyToken(token);
+            }
+        });
+        
+        // Login function
+        async function login() {
+            const username = document.getElementById('username-input').value;
+            const password = document.getElementById('password-input').value;
+            
+            if (!username || !password) {
+                showError('Bitte Benutzername und Passwort eingeben');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    currentUser = { username, role: data.role };
+                    isAdmin = data.role === 'admin';
+                    showMainApp();
+                    connectWebSocket();
+                    loadData();
+                } else {
+                    showError(data.error || 'Login fehlgeschlagen');
+                }
+            } catch (error) {
+                showError('Verbindungsfehler');
+            }
+        }
+        
+        // Verify token
+        async function verifyToken(token) {
+            try {
+                const response = await fetch(`${API_BASE}/user-info`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data;
+                    isAdmin = data.role === 'admin';
+                    showMainApp();
+                    connectWebSocket();
+                    loadData();
+                } else {
+                    localStorage.removeItem('token');
+                }
+            } catch (error) {
+                localStorage.removeItem('token');
+            }
+        }
+        
+        // Show main app
+        function showMainApp() {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            document.getElementById('user-info').classList.remove('hidden');
+            document.getElementById('username').textContent = currentUser.username;
+            
+            if (isAdmin) {
+                document.getElementById('floating-actions').classList.remove('hidden');
+            }
+        }
+        
+        // Show error
+        function showError(message) {
+            const errorDiv = document.getElementById('login-error');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => {
+                errorDiv.classList.add('hidden');
+            }, 3000);
+        }
+        
+        // Load data
+        async function loadData() {
+            document.getElementById('loading').classList.remove('hidden');
+            
+            try {
+                const token = localStorage.getItem('token');
+                const [employeesRes, deptsRes] = await Promise.all([
+                    fetch(`${API_BASE}/employees`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                    fetch(`${API_BASE}/departments`, { headers: { 'Authorization': `Bearer ${token}` } })
+                ]);
+                
+                const employees = await employeesRes.json();
+                const departments = await deptsRes.json();
+                
+                renderEmployees(employees, departments);
+                updateStats(employees, departments);
+                
+            } catch (error) {
+                showError('Fehler beim Laden der Daten');
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+        
+        // Render employees
+        function renderEmployees(employees, departments) {
+            // Group employees by department
+            const empByDept = new Map();
+            empByDept.set('employees', []);
+            empByDept.set('break', []);
+            
+            departments.forEach(d => empByDept.set(d.id, []));
+            
+            employees.forEach(emp => {
+                if (emp.status === 'break') {
+                    empByDept.get('break').push(emp);
+                } else if (emp.department_id) {
+                    if (empByDept.has(emp.department_id)) {
+                        empByDept.get(emp.department_id).push(emp);
+                    }
+                } else {
+                    empByDept.get('employees').push(emp);
+                }
+            });
+            
+            // Render employee list
+            renderEmployeeList('employees-list', empByDept.get('employees'), 'employees-count');
+            renderEmployeeList('break-list', empByDept.get('break'), 'break-count-detail');
+            
+            // Render departments
+            const deptContainer = document.getElementById('departments-container');
+            deptContainer.innerHTML = '';
+            
+            departments.forEach(dept => {
+                const deptEmps = empByDept.get(dept.id) || [];
+                const deptHtml = `
+                    <div class="department-section">
+                        <div class="department-card">
+                            <div class="department-header">
+                                <div class="department-title">🏢 ${dept.name}</div>
+                                <div class="department-count">${deptEmps.length}/${dept.capacity}</div>
+                            </div>
+                            ${isAdmin ? `
+                            <div class="department-controls">
+                                <button class="control-btn ${dept.auto_assign ? 'active' : ''}" onclick="toggleAutoAssign(${dept.id})">
+                                    ${dept.auto_assign ? 'Auto' : 'Manuell'}
+                                </button>
+                                <input type="number" value="${dept.capacity}" min="1" max="50" 
+                                       onchange="updateCapacity(${dept.id}, this.value)" 
+                                       style="width: 80px; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                                <button class="control-btn delete" onclick="deleteDepartment(${dept.id}, '${dept.name}')">
+                                    Löschen
+                                </button>
+                            </div>
+                            ` : ''}
+                            <div class="employee-list" id="dept-${dept.id}-list">
+                                ${deptEmps.map(emp => renderEmployeeCard(emp)).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                deptContainer.innerHTML += deptHtml;
+            });
+        }
+        
+        // Render employee list
+        function renderEmployeeList(containerId, employees, countId) {
+            const container = document.getElementById(containerId);
+            const countEl = document.getElementById(countId);
+            
+            container.innerHTML = employees.map(emp => renderEmployeeCard(emp)).join('');
+            countEl.textContent = employees.length;
+        }
+        
+        // Render employee card
+        function renderEmployeeCard(emp) {
+            return `
+                <div class="employee-card ${emp.status}" id="emp-${emp.id}">
+                    <div class="employee-header">
+                        <div class="employee-name">${emp.name}</div>
+                        <div class="employee-status ${emp.status}">${emp.status === 'active' ? 'Aktiv' : 'Pause'}</div>
+                    </div>
+                    <div class="employee-radio">
+                        📻 Funk: ${emp.radio || 'Nicht zugewiesen'}
+                    </div>
+                    ${isAdmin ? `
+                    <div class="employee-actions">
+                        <button class="action-btn active" onclick="setStatus(${emp.id}, 'active')">Aktiv</button>
+                        <button class="action-btn break" onclick="setStatus(${emp.id}, 'break')">Pause</button>
+                        <button class="action-btn delete" onclick="deleteEmployee(${emp.id}, '${emp.name}')">Löschen</button>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+        
+        // Update stats
+        function updateStats(employees, departments) {
+            const activeCount = employees.filter(e => e.status === 'active').length;
+            const breakCount = employees.filter(e => e.status === 'break').length;
+            
+            document.getElementById('active-count').textContent = activeCount;
+            document.getElementById('break-count').textContent = breakCount;
+            document.getElementById('dept-count').textContent = departments.length;
+        }
+        
+        // API Functions
+        async function setStatus(empId, status) {
+            if (!isAdmin) return;
+            
+            try {
+                const token = localStorage.getItem('token');
+                await fetch(`${API_BASE}/employees/${empId}/status`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+            } catch (error) {
+                showError('Fehler beim Ändern des Status');
+            }
+        }
+        
+        async function deleteEmployee(empId, empName) {
+            if (!isAdmin) return;
+            
+            if (confirm(`Mitarbeiter "${empName}" wirklich löschen?`)) {
+                try {
+                    const token = localStorage.getItem('token');
+                    await fetch(`${API_BASE}/employees/${empId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } catch (error) {
+                    showError('Fehler beim Löschen');
+                }
+            }
+        }
+        
+        async function toggleAutoAssign(deptId) {
+            if (!isAdmin) return;
+            
+            try {
+                const token = localStorage.getItem('token');
+                await fetch(`${API_BASE}/departments/${deptId}/auto-assign`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            } catch (error) {
+                showError('Fehler beim Ändern der Auto-Zuweisung');
+            }
+        }
+        
+        async function updateCapacity(deptId, capacity) {
+            if (!isAdmin) return;
+            
+            try {
+                const token = localStorage.getItem('token');
+                await fetch(`${API_BASE}/departments/${deptId}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ capacity: parseInt(capacity) })
+                });
+            } catch (error) {
+                showError('Fehler beim Ändern der Kapazität');
+            }
+        }
+        
+        async function deleteDepartment(deptId, deptName) {
+            if (!isAdmin) return;
+            
+            if (confirm(`Bereich "${deptName}" wirklich löschen?`)) {
+                try {
+                    const token = localStorage.getItem('token');
+                    await fetch(`${API_BASE}/departments/${deptId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } catch (error) {
+                    showError('Fehler beim Löschen');
+                }
+            }
+        }
+        
+        async function fairDistribute() {
+            if (!isAdmin) return;
+            
+            try {
+                const token = localStorage.getItem('token');
+                await fetch(`${API_BASE}/auto-assign`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            } catch (error) {
+                showError('Fehler bei der Verteilung');
+            }
+        }
+        
+        async function resetAll() {
+            if (!isAdmin) return;
+            
+            if (confirm('Alle Mitarbeiter zurücksetzen?')) {
+                try {
+                    const token = localStorage.getItem('token');
+                    await fetch(`${API_BASE}/reset`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } catch (error) {
+                    showError('Fehler beim Zurücksetzen');
+                }
+            }
+        }
+        
+        // WebSocket connection
+        function connectWebSocket() {
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${wsProtocol}//${window.location.host.replace(':5173', ':3000')}`;
+            
+            socket = new WebSocket(wsUrl);
+            
+            socket.onopen = () => {
+                console.log('WebSocket verbunden');
+            };
+            
+            socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'update') {
+                    loadData(); // Reload data on updates
+                }
+            };
+            
+            socket.onclose = () => {
+                console.log('WebSocket getrennt, versuche Neuverbindung...');
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+        
+        // Handle enter key in login
+        document.getElementById('password-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+        
+        document.getElementById('username-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('password-input').focus();
+            }
+        });
+    </script>
+</body>
+</html>

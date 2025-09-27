@@ -7,9 +7,39 @@
     <meta name="cache-control" content="no-cache, no-store, must-revalidate">
     <meta name="pragma" content="no-cache">
     <meta name="expires" content="0">
+    <script>
+      // Mobile Detection & Redirect
+      function isMobile() {
+        const userAgent = navigator.userAgent.toLowerCase();
+        const mobileKeywords = ['android', 'iphone', 'ipod', 'ipad', 'blackberry', 'windows phone'];
+        return mobileKeywords.some(keyword => userAgent.includes(keyword)) || 
+               window.innerWidth <= 768 || 
+               'ontouchstart' in window;
+      }
+      
+      // Redirect mobile users to mobile.html unless they explicitly want desktop
+      if (isMobile() && !window.location.search.includes('desktop=true')) {
+        // Check if we're not already on mobile.html
+        if (!window.location.pathname.includes('mobile.html')) {
+          window.location.href = window.location.origin + '/mobile.html';
+        }
+      }
+    </script>
   </head>
   <body class="dark:bg-neutral-900 bg-slate-50">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Desktop Override Link -->
+    <div style="position: fixed; bottom: 10px; right: 10px; z-index: 1000;">
+      <a href="/mobile.html" style="background: #667eea; color: white; padding: 8px 12px; border-radius: 20px; text-decoration: none; font-size: 12px; display: none;" id="mobile-link">📱 Mobile Version</a>
+    </div>
+    
+    <script>
+      // Show mobile link on desktop
+      if (!isMobile()) {
+        document.getElementById('mobile-link').style.display = 'inline-block';
+      }
+    </script>
   </body>
 </html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Staff - Wähle deine Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+        
+        .version-buttons {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .version-btn {
+            display: block;
+            padding: 20px;
+            border-radius: 15px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .version-btn.mobile {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .version-btn.desktop {
+            background: #f8f9fa;
+            color: #333;
+            border-color: #e1e5e9;
+        }
+        
+        .version-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .version-btn.mobile:hover {
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .btn-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .btn-desc {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .auto-detect {
+            background: #e8f5e9;
+            border: 1px solid #4caf50;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .auto-detect strong {
+            color: #2e7d32;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            .subtitle {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">📊</div>
+        <h1>Live Staff</h1>
+        <div class="subtitle">Mitarbeiter-Management System</div>
+        
+        <div id="auto-detect" class="auto-detect" style="display: none;">
+            <strong>🎯 Automatische Erkennung:</strong><br>
+            <span id="device-info"></span>
+        </div>
+        
+        <div class="version-buttons">
+            <a href="/mobile.html" class="version-btn mobile" id="mobile-btn">
+                <span class="btn-icon">📱</span>
+                <div class="btn-title">Mobile Version</div>
+                <div class="btn-desc">Optimiert für Smartphones & Tablets<br>Große Buttons, Touch-freundlich</div>
+            </a>
+            
+            <a href="/index.html" class="version-btn desktop" id="desktop-btn">
+                <span class="btn-icon">🖥️</span>
+                <div class="btn-title">Desktop Version</div>
+                <div class="btn-desc">Vollständige Funktionen<br>Drag & Drop, Grid-Layout</div>
+            </a>
+        </div>
+        
+        <div style="font-size: 12px; color: #999;">
+            Version 2.1.0 - Mit automatischer Geräteerkennung
+        </div>
+    </div>
+    
+    <script>
+        function detectDevice() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isMobile = /android|iphone|ipod|ipad|blackberry|windows phone/.test(userAgent) || 
+                           window.innerWidth <= 768 || 
+                           'ontouchstart' in window;
+            
+            const autoDetectDiv = document.getElementById('auto-detect');
+            const deviceInfoSpan = document.getElementById('device-info');
+            const mobileBtn = document.getElementById('mobile-btn');
+            const desktopBtn = document.getElementById('desktop-btn');
+            
+            if (isMobile) {
+                deviceInfoSpan.textContent = 'Mobilgerät erkannt - Mobile Version empfohlen';
+                mobileBtn.style.background = 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)';
+                mobileBtn.innerHTML = `
+                    <span class="btn-icon">📱✨</span>
+                    <div class="btn-title">Mobile Version (Empfohlen)</div>
+                    <div class="btn-desc">Optimiert für dein Gerät<br>Große Buttons, Touch-freundlich</div>
+                `;
+                
+                // Auto-redirect after 3 seconds if no interaction
+                setTimeout(() => {
+                    if (!document.querySelector(':hover')) {
+                        window.location.href = '/mobile.html';
+                    }
+                }, 3000);
+            } else {
+                deviceInfoSpan.textContent = 'Desktop erkannt - Desktop Version empfohlen';
+                desktopBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                desktopBtn.style.color = 'white';
+                desktopBtn.innerHTML = `
+                    <span class="btn-icon">🖥️✨</span>
+                    <div class="btn-title">Desktop Version (Empfohlen)</div>
+                    <div class="btn-desc">Vollständige Funktionen für deinen Desktop<br>Drag & Drop, Grid-Layout</div>
+                `;
+            }
+            
+            autoDetectDiv.style.display = 'block';
+        }
+        
+        // Detect device on load
+        window.addEventListener('load', detectDevice);
+        
+        // Update on resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(detectDevice, 300);
+        });
+    </script>
+</body>
+</html>
