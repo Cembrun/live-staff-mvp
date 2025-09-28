@@ -20,6 +20,21 @@ const io = new SocketIOServer(httpServer, {
 const PORT = process.env.PORT || 4000;
 const JWT_SECRET = process.env.JWT_SECRET || 'change_me';
 
+// Keep-Alive für Render.com - verhindert Sleep Mode
+if (process.env.NODE_ENV === 'production') {
+  const keepAliveUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+  console.log('🔄 Keep-Alive aktiviert für:', keepAliveUrl);
+  
+  setInterval(async () => {
+    try {
+      const response = await fetch(`${keepAliveUrl}/api/test`);
+      console.log('💓 Keep-Alive Ping:', response.status, new Date().toLocaleTimeString());
+    } catch (error) {
+      console.log('💓 Keep-Alive Ping fehlgeschlagen:', error.message);
+    }
+  }, 10 * 60 * 1000); // Alle 10 Minuten
+}
+
 // Initialize database on first run
 try {
   initDb();
@@ -66,6 +81,15 @@ function pushState(){
   console.log('📡 Broadcasting state update via WebSocket - Employees:', employees.length, 'Departments:', departments.length);
   io.emit('state', { employees, departments, assignments });
 }
+
+// Keep-Alive Test Endpoint
+app.get('/api/test', (req, res) => {
+  res.json({ 
+    status: 'Server is alive', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
 
 // Auth
 app.post('/api/login', async (req,res)=>{
