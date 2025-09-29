@@ -350,20 +350,112 @@
                 font-size: 16px;
             }
         }
+        
+        /* Employee Interface Styles */
+        .employee-interface {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .employee-status {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 15px;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-break {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-assigned {
+            background: #cce7ff;
+            color: #004085;
+        }
+        
+        .employee-action-btn {
+            width: 100%;
+            padding: 20px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-active {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-break {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-logout {
+            background: #6c757d;
+            color: white;
+            font-size: 16px;
+            padding: 15px;
+        }
+        
+        .employee-dropdown {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+        }
+        
+        .login-mode-toggle {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+        }
     </style>
 </head>
 <body>
     <div class="mobile-container">
         <!-- Header -->
         <div class="header">
-            <div style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 8px 15px; border-radius: 15px; margin-bottom: 15px; text-align: center; font-weight: bold; font-size: 14px;">
-                📱 MOBILE VERSION - Optimiert für Smartphones
-            </div>
             <h1>📱 Live Staff Mobile</h1>
             <div id="user-info" class="hidden">
                 <p>Angemeldet als: <strong id="username"></strong></p>
                 <a href="/?desktop=true" style="color: #667eea; text-decoration: none; font-size: 14px; margin-top: 5px; display: inline-block; background: white; padding: 5px 10px; border-radius: 10px; border: 2px solid #667eea;">
-                    🖥️ Zur Desktop Version wechseln
+                    🖥️ Desktop Version
                 </a>
             </div>
             <div class="stats">
@@ -385,16 +477,58 @@
         <!-- Login Section -->
         <div id="login-section" class="login-section">
             <h2>🔐 Anmelden</h2>
-            <div class="form-group">
-                <label for="username">Benutzername</label>
-                <input type="text" id="username-input" placeholder="Benutzername eingeben">
+            
+            <!-- Login Mode Toggle -->
+            <div class="login-mode-toggle">
+                <button class="mode-btn active" id="admin-mode-btn" onclick="switchLoginMode('admin')">👤 Admin</button>
+                <button class="mode-btn" id="employee-mode-btn" onclick="switchLoginMode('employee')">👷 Mitarbeiter</button>
             </div>
-            <div class="form-group">
-                <label for="password">Passwort</label>
-                <input type="password" id="password-input" placeholder="Passwort eingeben">
+            
+            <!-- Admin Login -->
+            <div id="admin-login" class="form-group">
+                <div class="form-group">
+                    <label for="username-input">Benutzername</label>
+                    <input type="text" id="username-input" placeholder="Benutzername eingeben" value="admin">
+                </div>
+                <div class="form-group">
+                    <label for="password-input">Passwort</label>
+                    <input type="password" id="password-input" placeholder="Passwort eingeben" value="admin123">
+                </div>
+                <button class="login-btn" onclick="login()">Als Admin anmelden</button>
             </div>
-            <button class="login-btn" onclick="login()">Anmelden</button>
+            
+            <!-- Employee Login -->
+            <div id="employee-login" class="form-group hidden">
+                <div class="form-group">
+                    <label for="employee-select">Mitarbeiter auswählen</label>
+                    <select id="employee-select" class="employee-dropdown">
+                        <option value="">-- Mitarbeiter auswählen --</option>
+                    </select>
+                </div>
+                <button class="login-btn" onclick="employeeLogin()">Als Mitarbeiter anmelden</button>
+            </div>
+            
             <div id="login-error" class="error hidden"></div>
+        </div>
+
+        <!-- Employee Interface -->
+        <div id="employee-interface" class="employee-interface hidden">
+            <h2>👷 Mitarbeiter-Panel</h2>
+            <div id="employee-name-display" class="employee-name" style="font-size: 20px; margin: 10px 0;">Max Mustermann</div>
+            
+            <div id="employee-current-status" class="employee-status status-active">
+                🟢 AKTIV
+            </div>
+            
+            <button class="employee-action-btn btn-active" onclick="setEmployeeStatus('available')">
+                🟢 AKTIV
+            </button>
+            <button class="employee-action-btn btn-break" onclick="setEmployeeStatus('break')">
+                ☕ PAUSE
+            </button>
+            <button class="employee-action-btn btn-logout" onclick="employeeLogout()">
+                🚪 ABMELDEN
+            </button>
         </div>
 
         <!-- Main Content -->
@@ -444,22 +578,34 @@
     </div>
 
     <script>
-        // API Base URL
-        const API_BASE = window.location.origin.replace(':5173', ':3000');
+        // API Base URL - Fixed for Render.com
+        const API_BASE = window.location.origin + '/api';
         
         let currentUser = null;
         let isAdmin = false;
         let socket = null;
+        let currentEmployee = null; // For employee login mode
+        let loginMode = 'admin'; // 'admin' or 'employee'
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Mobile app initializing...');
+            console.log('🌐 Current URL:', window.location.href);
+            console.log('🌐 API_BASE will be:', window.location.origin + '/api');
+            
             // Show mobile welcome message
             showMobileWelcome();
             
             // Check if already logged in
             const token = localStorage.getItem('token');
+            console.log('🔍 Checking for existing token...');
+            console.log('🔑 Token found:', !!token);
+            
             if (token) {
+                console.log('🔑 Found existing token, verifying...');
                 verifyToken(token);
+            } else {
+                console.log('❌ No token found, showing login form');
             }
         });
         
@@ -479,67 +625,103 @@
             const username = document.getElementById('username-input').value;
             const password = document.getElementById('password-input').value;
             
+            console.log('🔐 Login attempt:', username);
+            
             if (!username || !password) {
                 showError('Bitte Benutzername und Passwort eingeben');
                 return;
             }
             
             try {
+                console.log('📡 Sending login request to:', `${API_BASE}/login`);
                 const response = await fetch(`${API_BASE}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
                 
+                console.log('📡 Login response status:', response.status);
                 const data = await response.json();
+                console.log('📡 Login response data:', data);
                 
                 if (response.ok) {
+                    console.log('✅ Login successful, saving token');
                     localStorage.setItem('token', data.token);
                     currentUser = { username, role: data.role };
                     isAdmin = data.role === 'admin';
+                    console.log('👤 User role:', data.role, 'isAdmin:', isAdmin);
                     showMainApp();
                     connectWebSocket();
                     loadData();
                 } else {
+                    console.error('❌ Login failed:', data.error);
                     showError(data.error || 'Login fehlgeschlagen');
                 }
             } catch (error) {
-                showError('Verbindungsfehler');
+                console.error('💥 Login error:', error);
+                showError('Verbindungsfehler: ' + error.message);
             }
         }
         
         // Verify token
         async function verifyToken(token) {
+            console.log('🔍 Verifying token on page load...');
+            console.log('🔑 Token exists:', !!token);
+            console.log('🌐 API_BASE:', API_BASE);
+            
             try {
+                console.log('📡 Sending token verification request...');
                 const response = await fetch(`${API_BASE}/user-info`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 
+                console.log('📡 Token verification response:', response.status);
+                
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('👤 User data received:', data);
                     currentUser = data;
                     isAdmin = data.role === 'admin';
+                    console.log('🔐 User role:', data.role, 'isAdmin:', isAdmin);
+                    
                     showMainApp();
                     connectWebSocket();
                     loadData();
+                    
+                    console.log('✅ Token verification successful');
                 } else {
+                    console.log('❌ Token verification failed, removing token');
                     localStorage.removeItem('token');
+                    currentUser = null;
+                    isAdmin = false;
                 }
             } catch (error) {
+                console.error('💥 Token verification error:', error);
                 localStorage.removeItem('token');
+                currentUser = null;
+                isAdmin = false;
             }
         }
         
         // Show main app
         function showMainApp() {
+            console.log('📱 Showing main app interface...');
+            console.log('👤 Current user:', currentUser);
+            console.log('🔐 Is admin:', isAdmin);
+            
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('main-content').classList.remove('hidden');
             document.getElementById('user-info').classList.remove('hidden');
             document.getElementById('username').textContent = currentUser.username;
             
             if (isAdmin) {
+                console.log('🔧 Showing admin controls');
                 document.getElementById('floating-actions').classList.remove('hidden');
+            } else {
+                console.log('👁️ Hiding admin controls (viewer mode)');
             }
+            
+            console.log('✅ Main app interface ready');
         }
         
         // Show error
@@ -554,23 +736,43 @@
         
         // Load data
         async function loadData() {
+            console.log('📊 Loading data...');
             document.getElementById('loading').classList.remove('hidden');
             
             try {
                 const token = localStorage.getItem('token');
+                console.log('🔑 Using token:', token ? 'Token exists' : 'No token');
+                
+                console.log('📡 Fetching employees and departments...');
                 const [employeesRes, deptsRes] = await Promise.all([
                     fetch(`${API_BASE}/employees`, { headers: { 'Authorization': `Bearer ${token}` } }),
                     fetch(`${API_BASE}/departments`, { headers: { 'Authorization': `Bearer ${token}` } })
                 ]);
                 
+                console.log('📡 Employees response:', employeesRes.status);
+                console.log('📡 Departments response:', deptsRes.status);
+                
+                if (!employeesRes.ok) {
+                    throw new Error(`Employees API error: ${employeesRes.status}`);
+                }
+                if (!deptsRes.ok) {
+                    throw new Error(`Departments API error: ${deptsRes.status}`);
+                }
+                
                 const employees = await employeesRes.json();
                 const departments = await deptsRes.json();
+                
+                console.log('👥 Employees loaded:', employees.length);
+                console.log('🏢 Departments loaded:', departments.length);
                 
                 renderEmployees(employees, departments);
                 updateStats(employees, departments);
                 
+                console.log('✅ Data loading complete');
+                
             } catch (error) {
-                showError('Fehler beim Laden der Daten');
+                console.error('💥 Data loading error:', error);
+                showError('Fehler beim Laden der Daten: ' + error.message);
             } finally {
                 document.getElementById('loading').classList.add('hidden');
             }
@@ -791,28 +993,50 @@
             }
         }
         
-        // WebSocket connection
+        // WebSocket connection - Fixed for Render.com
         function connectWebSocket() {
+            console.log('🔌 Attempting WebSocket connection...');
             const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${wsProtocol}//${window.location.host.replace(':5173', ':3000')}`;
+            const wsUrl = `${wsProtocol}//${window.location.host}`;
+            console.log('🔌 WebSocket URL:', wsUrl);
             
-            socket = new WebSocket(wsUrl);
-            
-            socket.onopen = () => {
-                console.log('WebSocket verbunden');
-            };
-            
-            socket.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                if (data.type === 'update') {
-                    loadData(); // Reload data on updates
-                }
-            };
-            
-            socket.onclose = () => {
-                console.log('WebSocket getrennt, versuche Neuverbindung...');
+            try {
+                socket = new WebSocket(wsUrl);
+                
+                socket.onopen = () => {
+                    console.log('✅ WebSocket verbunden successfully!');
+                };
+                
+                socket.onmessage = (event) => {
+                    console.log('📩 WebSocket message received:', event.data);
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('📩 Parsed WebSocket data:', data);
+                        
+                        // Handle both 'update' and 'state' messages
+                        if (data.type === 'update' || data.employees || data.departments) {
+                            console.log('🔄 Received data update, reloading...');
+                            loadData(); // Reload data on updates
+                        }
+                    } catch (error) {
+                        console.error('💥 WebSocket message parsing error:', error);
+                    }
+                };
+                
+                socket.onclose = (event) => {
+                    console.log('❌ WebSocket getrennt:', event.code, event.reason);
+                    console.log('🔄 Versuche Neuverbindung in 3 Sekunden...');
+                    setTimeout(connectWebSocket, 3000);
+                };
+                
+                socket.onerror = (error) => {
+                    console.error('💥 WebSocket error:', error);
+                };
+                
+            } catch (error) {
+                console.error('💥 WebSocket connection error:', error);
                 setTimeout(connectWebSocket, 3000);
-            };
+            }
         }
         
         // Handle enter key in login
@@ -827,6 +1051,140 @@
                 document.getElementById('password-input').focus();
             }
         });
+        
+        // === EMPLOYEE FUNCTIONS ===
+        
+        // Switch between admin and employee login
+        function switchLoginMode(mode) {
+            loginMode = mode;
+            const adminBtn = document.getElementById('admin-mode-btn');
+            const employeeBtn = document.getElementById('employee-mode-btn');
+            const adminLogin = document.getElementById('admin-login');
+            const employeeLogin = document.getElementById('employee-login');
+            
+            if (mode === 'admin') {
+                adminBtn.classList.add('active');
+                employeeBtn.classList.remove('active');
+                adminLogin.classList.remove('hidden');
+                employeeLogin.classList.add('hidden');
+            } else {
+                employeeBtn.classList.add('active');
+                adminBtn.classList.remove('active');
+                employeeLogin.classList.remove('hidden');
+                adminLogin.classList.add('hidden');
+                loadEmployeeDropdown();
+            }
+        }
+        
+        // Load employees for dropdown
+        async function loadEmployeeDropdown() {
+            try {
+                // Get employees without authentication for dropdown
+                const response = await fetch(`${API_BASE}/employees-list`);
+                const employees = await response.json();
+                
+                const select = document.getElementById('employee-select');
+                select.innerHTML = '<option value="">-- Mitarbeiter auswählen --</option>';
+                
+                employees.forEach(emp => {
+                    const option = document.createElement('option');
+                    option.value = emp.id;
+                    option.textContent = emp.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Fehler beim Laden der Mitarbeiter:', error);
+            }
+        }
+        
+        // Employee login
+        async function employeeLogin() {
+            const selectedEmployeeId = document.getElementById('employee-select').value;
+            if (!selectedEmployeeId) {
+                showError('Bitte einen Mitarbeiter auswählen');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/employee-login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ employeeId: selectedEmployeeId })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    currentEmployee = data.employee;
+                    showEmployeeInterface();
+                    connectWebSocket();
+                } else {
+                    showError('Anmeldung fehlgeschlagen');
+                }
+            } catch (error) {
+                console.error('Employee login error:', error);
+                showError('Verbindungsfehler');
+            }
+        }
+        
+        // Show employee interface
+        function showEmployeeInterface() {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('employee-interface').classList.remove('hidden');
+            document.getElementById('employee-name-display').textContent = currentEmployee.name;
+            updateEmployeeStatus();
+        }
+        
+        // Update employee status display
+        function updateEmployeeStatus() {
+            const statusDisplay = document.getElementById('employee-current-status');
+            const status = currentEmployee.status || 'available';
+            
+            statusDisplay.classList.remove('status-active', 'status-break', 'status-assigned');
+            
+            if (status === 'available') {
+                statusDisplay.textContent = '🟢 AKTIV';
+                statusDisplay.classList.add('status-active');
+            } else if (status === 'break') {
+                statusDisplay.textContent = '☕ PAUSE';
+                statusDisplay.classList.add('status-break');
+            } else if (status === 'assigned') {
+                statusDisplay.textContent = '📍 ZUGEWIESEN';
+                statusDisplay.classList.add('status-assigned');
+            }
+        }
+        
+        // Set employee status
+        async function setEmployeeStatus(status) {
+            try {
+                const response = await fetch(`${API_BASE}/employee-status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        employeeId: currentEmployee.id, 
+                        status: status 
+                    })
+                });
+                
+                if (response.ok) {
+                    currentEmployee.status = status;
+                    updateEmployeeStatus();
+                    console.log(`Status geändert zu: ${status}`);
+                } else {
+                    showError('Status-Änderung fehlgeschlagen');
+                }
+            } catch (error) {
+                console.error('Status update error:', error);
+                showError('Verbindungsfehler');
+            }
+        }
+        
+        // Employee logout
+        function employeeLogout() {
+            currentEmployee = null;
+            document.getElementById('employee-interface').classList.add('hidden');
+            document.getElementById('login-section').classList.remove('hidden');
+            if (socket) socket.disconnect();
+        }
     </script>
 </body>
 </html>
