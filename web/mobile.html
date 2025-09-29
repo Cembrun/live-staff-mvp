@@ -520,6 +520,19 @@
                 🟢 AKTIV
             </div>
             
+            <!-- Current Department Display -->
+            <div id="employee-current-department" class="employee-status" style="background: #cce7ff; color: #004085; margin: 15px 0;">
+                📍 Kein Bereich zugewiesen
+            </div>
+            
+            <!-- Department Selection -->
+            <div class="form-group" style="margin: 20px 0;">
+                <label for="department-select" style="display: block; margin-bottom: 8px; font-weight: bold;">🏢 Bereich wählen:</label>
+                <select id="department-select" class="employee-dropdown" onchange="setEmployeeDepartment()">
+                    <option value="">-- Kein Bereich --</option>
+                </select>
+            </div>
+            
             <button class="employee-action-btn btn-active" onclick="setEmployeeStatus('available')">
                 🟢 AKTIV
             </button>
@@ -1184,6 +1197,116 @@
             document.getElementById('employee-interface').classList.add('hidden');
             document.getElementById('login-section').classList.remove('hidden');
             if (socket) socket.disconnect();
+        }
+        
+        // === DEPARTMENT FUNCTIONS ===
+        
+        // Load departments for employee dropdown
+        async function loadDepartmentDropdown() {
+            try {
+                const response = await fetch(`${API_BASE}/departments-list`);
+                const departments = await response.json();
+                
+                const select = document.getElementById('department-select');
+                select.innerHTML = '<option value="">-- Kein Bereich --</option>';
+                
+                departments.forEach(dept => {
+                    const option = document.createElement('option');
+                    option.value = dept.id;
+                    option.textContent = `🏢 ${dept.name}`;
+                    select.appendChild(option);
+                });
+                
+                // Set current department selection
+                if (currentEmployee && currentEmployee.department_id) {
+                    select.value = currentEmployee.department_id;
+                }
+            } catch (error) {
+                console.error('Fehler beim Laden der Bereiche:', error);
+            }
+        }
+        
+        // Set employee department
+        async function setEmployeeDepartment() {
+            const selectedDepartmentId = document.getElementById('department-select').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/employee-department`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        employeeId: currentEmployee.id, 
+                        departmentId: selectedDepartmentId || null
+                    })
+                });
+                
+                if (response.ok) {
+                    currentEmployee.department_id = selectedDepartmentId || null;
+                    updateEmployeeDepartmentDisplay();
+                    console.log(`Bereich geändert zu: ${selectedDepartmentId || 'Kein Bereich'}`);
+                } else {
+                    showError('Bereich-Änderung fehlgeschlagen');
+                }
+            } catch (error) {
+                console.error('Department update error:', error);
+                showError('Verbindungsfehler');
+            }
+        }
+        
+        // Update employee department display
+        function updateEmployeeDepartmentDisplay() {
+            const deptDisplay = document.getElementById('employee-current-department');
+            
+            if (currentEmployee.department_id) {
+                // Get department name from dropdown
+                const select = document.getElementById('department-select');
+                const selectedOption = select.options[select.selectedIndex];
+                const deptName = selectedOption ? selectedOption.textContent : 'Unbekannter Bereich';
+                deptDisplay.textContent = `📍 ${deptName}`;
+                deptDisplay.style.background = '#cce7ff';
+                deptDisplay.style.color = '#004085';
+            } else {
+                deptDisplay.textContent = '📍 Kein Bereich zugewiesen';
+                deptDisplay.style.background = '#f8f9fa';
+                deptDisplay.style.color = '#6c757d';
+            }
+        }
+        
+        // Enhanced showEmployeeInterface to load departments
+        const originalShowEmployeeInterface = showEmployeeInterface;
+        function showEmployeeInterface() {
+            originalShowEmployeeInterface();
+            loadDepartmentDropdown();
+            updateEmployeeDepartmentDisplay();
+        }
+        
+        // Enhanced WebSocket handling for real-time department updates
+        const originalConnectWebSocket = connectWebSocket;
+        function connectWebSocket() {
+            originalConnectWebSocket();
+            
+            // Add department update listener
+            if (socket) {
+                socket.on('state', (data) => {
+                    if (currentEmployee && data.employees) {
+                        // Find updated employee data
+                        const updatedEmployee = data.employees.find(emp => emp.id === currentEmployee.id);
+                        if (updatedEmployee) {
+                            const oldDepartment = currentEmployee.department_id;
+                            currentEmployee = updatedEmployee;
+                            
+                            // Update UI if department changed
+                            if (oldDepartment !== updatedEmployee.department_id) {
+                                const select = document.getElementById('department-select');
+                                select.value = updatedEmployee.department_id || '';
+                                updateEmployeeDepartmentDisplay();
+                            }
+                            
+                            updateEmployeeStatus();
+                        }
+                    }
+                });
+            }
         }
     </script>
 </body>

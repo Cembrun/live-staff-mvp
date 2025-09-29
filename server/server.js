@@ -118,6 +118,18 @@ app.put('/api/employee-status', (req, res) => {
   res.json({ ok: true });
 });
 
+app.get('/api/departments-list', (req, res) => {
+  const departments = db.prepare('SELECT id, name FROM departments').all();
+  res.json(departments);
+});
+
+app.put('/api/employee-department', (req, res) => {
+  const { employeeId, departmentId } = req.body;
+  db.prepare('UPDATE employees SET department_id = ? WHERE id = ?').run(departmentId, employeeId);
+  pushState(); // Broadcast update to all clients including admin dashboard
+  res.json({ ok: true });
+});
+
 // Auth
 app.post('/api/login', async (req,res)=>{
   const { username, password } = req.body;
