@@ -125,7 +125,18 @@ app.get('/api/departments-list', (req, res) => {
 
 app.put('/api/employee-department', (req, res) => {
   const { employeeId, departmentId } = req.body;
+  
+  // Update employee table directly (for mobile app)
   db.prepare('UPDATE employees SET department_id = ? WHERE id = ?').run(departmentId, employeeId);
+  
+  // Also update assignments table (for desktop app sync)
+  const row = db.prepare('SELECT id FROM assignments WHERE employee_id=?').get(employeeId);
+  if (row) {
+    db.prepare('UPDATE assignments SET department_id=?, assigned_at=CURRENT_TIMESTAMP WHERE id=?').run(departmentId, row.id);
+  } else {
+    db.prepare('INSERT INTO assignments (employee_id, department_id) VALUES (?,?)').run(employeeId, departmentId);
+  }
+  
   pushState(); // Broadcast update to all clients including admin dashboard
   res.json({ ok: true });
 });
@@ -210,9 +221,14 @@ app.post('/api/assign', authAdmin, (req,res)=>{
     }
   }
   
+  // Update assignments table (for desktop app)
   const row = db.prepare('SELECT id FROM assignments WHERE employee_id=?').get(employee_id);
   if (row) db.prepare('UPDATE assignments SET department_id=?, assigned_at=CURRENT_TIMESTAMP WHERE id=?').run(department_id, row.id);
   else db.prepare('INSERT INTO assignments (employee_id, department_id) VALUES (?,?)').run(employee_id, department_id);
+  
+  // Also update employee table directly (for mobile app sync)
+  db.prepare('UPDATE employees SET department_id = ? WHERE id = ?').run(department_id, employee_id);
+  
   pushState(); res.json({ ok:true });
 });
 app.post('/api/status', authAdmin, (req,res)=>{

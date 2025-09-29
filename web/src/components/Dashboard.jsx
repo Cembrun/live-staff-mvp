@@ -144,7 +144,7 @@ export default function Dashboard({ state, api, user }){
       
       <section className="mobile-department-container block lg:hidden">
         <div className="mobile-department-item">
-          <DepartmentColumn title="Mitarbeiter" dept={null}
+          <DepartmentColumn title="Mitarbeiter" dept={null} departments={departments}
             employees={empByDept.get('employees') || []}
             onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
             onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null} 
@@ -152,7 +152,7 @@ export default function Dashboard({ state, api, user }){
         </div>
         
         <div className="mobile-department-item">
-          <DepartmentColumn title="Pause" dept={{ id: null }}
+          <DepartmentColumn title="Pause" dept={{ id: null }} departments={departments}
             employees={empByDept.get('break') || []}
             onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
             onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null} 
@@ -161,7 +161,7 @@ export default function Dashboard({ state, api, user }){
 
         {departments.map(d=> (
           <div key={d.id} className="mobile-department-item">
-            <DepartmentColumn title={d.name} dept={d}
+            <DepartmentColumn title={d.name} dept={d} departments={departments}
               employees={empByDept.get(d.id) || []}
               onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
               onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null}
@@ -174,13 +174,13 @@ export default function Dashboard({ state, api, user }){
       <section className="hidden lg:flex lg:flex-col lg:flex-1 lg:min-h-0">
         <div className="lg:grid lg:grid-cols-[320px_1fr] gap-2 flex-1 min-h-0">
           <div className="flex flex-col gap-2">
-            <DepartmentColumn title="Mitarbeiter" dept={null}
+            <DepartmentColumn title="Mitarbeiter" dept={null} departments={departments}
               employees={empByDept.get('employees') || []}
               onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
               onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null} 
               onUpdateCapacity={isAdmin ? onUpdateCapacity : null} onToggleAutoAssign={isAdmin ? onToggleAutoAssign : null} isEmployeeList={true} isAdmin={isAdmin} />
             
-            <DepartmentColumn title="Pause" dept={{ id: null }}
+            <DepartmentColumn title="Pause" dept={{ id: null }} departments={departments}
               employees={empByDept.get('break') || []}
               onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
               onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null} 
@@ -189,7 +189,7 @@ export default function Dashboard({ state, api, user }){
           
           <div className="grid gap-2 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {departments.map(d=> (
-              <DepartmentColumn key={d.id} title={d.name} dept={d}
+              <DepartmentColumn key={d.id} title={d.name} dept={d} departments={departments}
                 employees={empByDept.get(d.id) || []}
                 onDropEmployee={isAdmin ? onDropEmployee : null} onSetStatus={isAdmin ? onSetStatus : null} onEditRadio={isAdmin ? onEditRadio : null} 
                 onDeleteEmployee={isAdmin ? onDeleteEmployee : null} onDeleteDepartment={isAdmin ? onDeleteDepartment : null}

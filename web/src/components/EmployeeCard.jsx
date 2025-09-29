@@ -4,7 +4,8 @@ function initials(name){
   return name.split(' ').map(s=>s[0]?.toUpperCase()).slice(0,2).join('');
 }
 
-export default function EmployeeCard({ emp, onDragStart, onSetStatus, onEditRadio, onDelete, isAssigned, isAdmin }){
+export default function EmployeeCard({ emp, departments = [], onDragStart, onSetStatus, onEditRadio, onDelete, isAssigned, isAdmin }){
+  const departmentName = emp.department_id ? departments.find(d => d.id === emp.department_id)?.name : null;
   return (
     <div
       draggable
@@ -41,6 +42,15 @@ export default function EmployeeCard({ emp, onDragStart, onSetStatus, onEditRadi
           </span>
         )}
       </div>
+      {/* Department Display */}
+      {departmentName && (
+        <div className="text-lg text-gray-600 dark:text-white/70 mt-2 flex items-center gap-3 md:text-[9px] md:sm:text-[10px] md:mt-1 md:gap-1">
+          <span className="font-medium">Bereich:</span>
+          <span className="text-lg px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-800 md:text-[9px] md:px-1 md:py-0.5">
+            🏢 {departmentName}
+          </span>
+        </div>
+      )}
       {/* Mobile: Große, gut sichtbare Buttons */}
       {isAdmin && (
         <div className="flex gap-3 mt-4 transition md:gap-1 md:mt-1 md:opacity-0 md:group-hover:opacity-100">
