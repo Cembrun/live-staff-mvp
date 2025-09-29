@@ -478,34 +478,15 @@
         <div id="login-section" class="login-section">
             <h2>🔐 Anmelden</h2>
             
-            <!-- Login Mode Toggle -->
-            <div class="login-mode-toggle">
-                <button class="mode-btn active" id="admin-mode-btn" onclick="switchLoginMode('admin')">👤 Admin</button>
-                <button class="mode-btn" id="employee-mode-btn" onclick="switchLoginMode('employee')">👷 Mitarbeiter</button>
-            </div>
-            
-            <!-- Admin Login -->
-            <div id="admin-login" class="form-group">
-                <div class="form-group">
-                    <label for="username-input">Benutzername</label>
-                    <input type="text" id="username-input" placeholder="Benutzername eingeben" value="admin">
-                </div>
-                <div class="form-group">
-                    <label for="password-input">Passwort</label>
-                    <input type="password" id="password-input" placeholder="Passwort eingeben" value="admin123">
-                </div>
-                <button class="login-btn" onclick="login()">Als Admin anmelden</button>
-            </div>
-            
-            <!-- Employee Login -->
-            <div id="employee-login" class="form-group hidden">
+            <!-- Employee Login - Simplified Interface -->
+            <div id="employee-login" class="form-group">
                 <div class="form-group">
                     <label for="employee-select">Mitarbeiter auswählen</label>
                     <select id="employee-select" class="employee-dropdown">
                         <option value="">-- Mitarbeiter auswählen --</option>
                     </select>
                 </div>
-                <button class="login-btn" onclick="employeeLogin()">Als Mitarbeiter anmelden</button>
+                <button class="login-btn" onclick="employeeLogin()">Anmelden</button>
             </div>
             
             <div id="login-error" class="error hidden"></div>
@@ -609,6 +590,9 @@
             
             // Show mobile welcome message
             showMobileWelcome();
+            
+            // Load employee dropdown immediately (simplified interface)
+            loadEmployeeDropdown();
             
             // Check if already logged in
             const token = localStorage.getItem('token');
@@ -1095,25 +1079,23 @@
         
         // === EMPLOYEE FUNCTIONS ===
         
-        // Switch between admin and employee login
-        function switchLoginMode(mode) {
-            loginMode = mode;
-            const adminBtn = document.getElementById('admin-mode-btn');
-            const employeeBtn = document.getElementById('employee-mode-btn');
-            const adminLogin = document.getElementById('admin-login');
-            const employeeLogin = document.getElementById('employee-login');
-            
-            if (mode === 'admin') {
-                adminBtn.classList.add('active');
-                employeeBtn.classList.remove('active');
-                adminLogin.classList.remove('hidden');
-                employeeLogin.classList.add('hidden');
-            } else {
-                employeeBtn.classList.add('active');
-                adminBtn.classList.remove('active');
-                employeeLogin.classList.remove('hidden');
-                adminLogin.classList.add('hidden');
-                loadEmployeeDropdown();
+        // Load employee dropdown on page load
+        async function loadEmployeeDropdown() {
+            try {
+                const response = await fetch(`${API_BASE}/employees-list`);
+                const employees = await response.json();
+                
+                const select = document.getElementById('employee-select');
+                select.innerHTML = '<option value="">-- Mitarbeiter auswählen --</option>';
+                
+                employees.forEach(emp => {
+                    const option = document.createElement('option');
+                    option.value = emp.id;
+                    option.textContent = emp.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading employees:', error);
             }
         }
         
