@@ -590,6 +590,7 @@
         <button class="fab" onclick="resetAll()" title="Alle zurücksetzen">🔄</button>
     </div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script>
         // API Base URL - Fixed for Render.com
         const API_BASE = window.location.origin + '/api';
@@ -1008,26 +1009,31 @@
         
         // WebSocket connection - Fixed for Render.com
         function connectWebSocket() {
-            console.log('🔌 Attempting WebSocket connection...');
-            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${wsProtocol}//${window.location.host}`;
-            console.log('🔌 WebSocket URL:', wsUrl);
+            console.log('🔌 Attempting Socket.IO connection...');
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                console.log('❌ No token found, skipping WebSocket connection');
+                return;
+            }
             
             try {
-                socket = new WebSocket(wsUrl);
+                socket = io({
+                    auth: {
+                        token: token
+                    },
+                    transports: ['websocket', 'polling']
+                });
                 
-                socket.onopen = () => {
-                    console.log('✅ WebSocket verbunden successfully!');
-                };
+                socket.on('connect', () => {
+                    console.log('✅ Socket.IO connected successfully!');
+                });
                 
-                socket.onmessage = (event) => {
-                    console.log('📩 WebSocket message received:', event.data);
+                socket.on('state', (data) => {
+                    console.log('📩 Socket.IO state received:', data);
                     try {
-                        const data = JSON.parse(event.data);
-                        console.log('📩 Parsed WebSocket data:', data);
-                        
                         // Handle both 'update' and 'state' messages
-                        if (data.type === 'update' || data.employees || data.departments) {
+                        if (data.employees || data.departments) {
                             console.log('🔄 Received data update, reloading...');
                             
                             // Special handling for employee department updates
@@ -1053,22 +1059,23 @@
                             loadData(); // Reload data on updates
                         }
                     } catch (error) {
-                        console.error('💥 WebSocket message parsing error:', error);
+                        console.error('💥 Socket.IO message parsing error:', error);
                     }
-                };
+                });
                 
-                socket.onclose = (event) => {
-                    console.log('❌ WebSocket getrennt:', event.code, event.reason);
-                    console.log('🔄 Versuche Neuverbindung in 3 Sekunden...');
+                socket.on('disconnect', (reason) => {
+                    console.log('❌ Socket.IO disconnected:', reason);
+                    console.log('🔄 Trying to reconnect in 3 seconds...');
                     setTimeout(connectWebSocket, 3000);
-                };
+                });
                 
-                socket.onerror = (error) => {
-                    console.error('💥 WebSocket error:', error);
-                };
+                socket.on('connect_error', (error) => {
+                    console.error('💥 Socket.IO connection error:', error);
+                    setTimeout(connectWebSocket, 3000);
+                });
                 
             } catch (error) {
-                console.error('💥 WebSocket connection error:', error);
+                console.error('💥 Socket.IO connection error:', error);
                 setTimeout(connectWebSocket, 3000);
             }
         }
