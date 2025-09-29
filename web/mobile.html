@@ -12,142 +12,198 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #2d2d2d 100%);
             min-height: 100vh;
-            padding: 10px;
+            padding: 16px;
             font-size: 16px;
+            color: #ffffff;
             position: relative;
+            overflow-x: hidden;
         }
         
         /* Mobile Version Indicator */
         body::before {
             content: "📱 MOBILE";
             position: fixed;
-            top: 5px;
-            left: 5px;
-            background: #28a745;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: bold;
+            top: 8px;
+            left: 8px;
+            background: linear-gradient(45deg, #00ff88, #00cc6a);
+            color: #000000;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
             z-index: 9999;
-            opacity: 0.9;
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+            letter-spacing: 0.5px;
         }
         
         .mobile-container {
-            max-width: 100%;
+            max-width: 420px;
             margin: 0 auto;
         }
         
         .header {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+            border-radius: 24px;
+            padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,255,255,0.1);
             text-align: center;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
         }
         
         .header h1 {
-            font-size: 28px;
-            color: #333;
-            margin-bottom: 10px;
+            font-size: 32px;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
         }
         
         .stats {
             display: flex;
             justify-content: space-around;
-            margin-top: 15px;
+            margin-top: 20px;
+            gap: 12px;
         }
         
         .stat-item {
             text-align: center;
+            background: rgba(255,255,255,0.05);
+            padding: 16px 12px;
+            border-radius: 16px;
+            flex: 1;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
         .stat-number {
-            font-size: 24px;
-            font-weight: bold;
-            color: #667eea;
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .stat-label {
-            font-size: 12px;
-            color: #666;
-            margin-top: 2px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 4px;
+            font-weight: 500;
         }
         
         .login-section {
-            background: white;
-            border-radius: 20px;
-            padding: 30px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+            border-radius: 24px;
+            padding: 32px 24px;
+            margin-bottom: 24px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
         .login-section h2 {
-            font-size: 22px;
-            color: #333;
-            margin-bottom: 20px;
+            font-size: 26px;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
             text-align: center;
+            font-weight: 700;
+            letter-spacing: -0.5px;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
         .form-group label {
             display: block;
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 8px;
+            font-size: 17px;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 12px;
             font-weight: 600;
+            letter-spacing: 0.3px;
         }
         
-        .form-group input {
+        .form-group input, .employee-dropdown {
             width: 100%;
-            padding: 15px;
-            font-size: 16px;
-            border: 2px solid #e1e5e9;
-            border-radius: 12px;
-            background: #f8f9fa;
+            padding: 18px 20px;
+            font-size: 17px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.05);
+            color: #ffffff;
             transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
         
-        .form-group input:focus {
+        .form-group input:focus, .employee-dropdown:focus {
             outline: none;
-            border-color: #667eea;
-            background: white;
+            border-color: #00ff88;
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .employee-dropdown option {
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 12px;
         }
         
         .login-btn {
             width: 100%;
-            padding: 18px;
+            padding: 20px;
             font-size: 18px;
-            font-weight: bold;
-            color: white;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-weight: 700;
+            color: #000000;
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
             border: none;
-            border-radius: 12px;
+            border-radius: 16px;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0, 255, 136, 0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 255, 136, 0.4);
         }
         
         .login-btn:active {
-            transform: scale(0.98);
+            transform: translateY(0);
+            box-shadow: 0 4px 16px rgba(0, 255, 136, 0.3);
         }
         
         .department-section {
-            margin-bottom: 25px;
+            margin-bottom: 24px;
         }
         
         .department-card {
-            background: white;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
             border-radius: 20px;
             padding: 25px 20px;
+            padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
         .department-header {
@@ -158,71 +214,83 @@
         }
         
         .department-title {
-            font-size: 22px;
-            font-weight: bold;
-            color: #333;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.3px;
         }
         
         .department-count {
-            background: #667eea;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 20px;
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+            color: #000000;
+            padding: 10px 16px;
+            border-radius: 16px;
             font-size: 14px;
-            font-weight: bold;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
         }
         
         .department-controls {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
         
         .control-btn {
-            padding: 10px 15px;
-            border-radius: 10px;
-            border: 2px solid #e1e5e9;
-            background: white;
+            padding: 12px 18px;
+            border-radius: 14px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8);
             font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
         
         .control-btn.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+            color: #000000;
+            border-color: #00ff88;
+            box-shadow: 0 4px 16px rgba(0, 255, 136, 0.3);
         }
         
         .employee-list {
             display: grid;
-            gap: 15px;
+            gap: 16px;
         }
         
         .employee-card {
-            background: #f8f9fa;
-            border-radius: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 18px;
             padding: 20px;
-            border: 2px solid transparent;
+            border: 2px solid rgba(255,255,255,0.1);
             transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
         
         .employee-card.active {
-            border-color: #28a745;
-            background: #e8f5e9;
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+            box-shadow: 0 8px 24px rgba(0, 255, 136, 0.2);
         }
         
         .employee-card.break {
-            border-color: #ffc107;
-            background: #fff8e1;
+            border-color: #ffa726;
+            background: rgba(255, 167, 38, 0.1);
+            box-shadow: 0 8px 24px rgba(255, 167, 38, 0.2);
         }
         
         .employee-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         
         .employee-name {
@@ -353,52 +421,84 @@
         
         /* Employee Interface Styles */
         .employee-interface {
-            background: white;
-            border-radius: 20px;
-            padding: 30px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+            border-radius: 24px;
+            padding: 32px 24px;
+            margin-bottom: 24px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
             text-align: center;
         }
         
         .employee-status {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 15px;
+            font-size: 28px;
+            font-weight: 800;
+            margin: 24px 0;
+            padding: 20px;
+            border-radius: 18px;
+            letter-spacing: 0.5px;
         }
         
         .status-active {
-            background: #d4edda;
-            color: #155724;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 204, 106, 0.2) 100%);
+            color: #00ff88;
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 255, 136, 0.2);
         }
         
         .status-break {
-            background: #fff3cd;
-            color: #856404;
+            background: linear-gradient(135deg, rgba(255, 167, 38, 0.2) 0%, rgba(255, 143, 28, 0.2) 100%);
+            color: #ffa726;
+            border: 2px solid rgba(255, 167, 38, 0.3);
+            box-shadow: 0 8px 24px rgba(255, 167, 38, 0.2);
         }
         
         .status-assigned {
-            background: #cce7ff;
-            color: #004085;
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.2) 0%, rgba(25, 118, 210, 0.2) 100%);
+            color: #2196f3;
+            border: 2px solid rgba(33, 150, 243, 0.3);
+            box-shadow: 0 8px 24px rgba(33, 150, 243, 0.2);
         }
         
         .employee-action-btn {
             width: 100%;
             padding: 20px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 15px;
+            margin: 12px 0;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 16px;
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            letter-spacing: 0.5px;
         }
         
         .btn-active {
-            background: #28a745;
-            color: white;
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+            color: #000000;
+            border-color: #00ff88;
+            box-shadow: 0 8px 24px rgba(0, 255, 136, 0.3);
+        }
+        
+        .btn-active:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 255, 136, 0.4);
+        }
+        
+        .btn-break {
+            background: linear-gradient(135deg, #ffa726 0%, #ff8f02 100%);
+            color: #000000;
+            border-color: #ffa726;
+            box-shadow: 0 8px 24px rgba(255, 167, 38, 0.3);
+        }
+        
+        .btn-break:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(255, 167, 38, 0.4);
         }
         
         .btn-break {
