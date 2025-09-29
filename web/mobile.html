@@ -1029,6 +1029,27 @@
                         // Handle both 'update' and 'state' messages
                         if (data.type === 'update' || data.employees || data.departments) {
                             console.log('🔄 Received data update, reloading...');
+                            
+                            // Special handling for employee department updates
+                            if (currentEmployee && data.employees) {
+                                const updatedEmployee = data.employees.find(emp => emp.id === currentEmployee.id);
+                                if (updatedEmployee) {
+                                    const oldDepartment = currentEmployee.department_id;
+                                    currentEmployee = updatedEmployee;
+                                    
+                                    // Update UI if department changed
+                                    if (oldDepartment !== updatedEmployee.department_id) {
+                                        const select = document.getElementById('department-select');
+                                        if (select) {
+                                            select.value = updatedEmployee.department_id || '';
+                                            updateEmployeeDepartmentDisplay();
+                                        }
+                                    }
+                                    
+                                    updateEmployeeStatus();
+                                }
+                            }
+                            
                             loadData(); // Reload data on updates
                         }
                     } catch (error) {
@@ -1145,6 +1166,8 @@
             document.getElementById('employee-interface').classList.remove('hidden');
             document.getElementById('employee-name-display').textContent = currentEmployee.name;
             updateEmployeeStatus();
+            loadDepartmentDropdown();
+            updateEmployeeDepartmentDisplay();
         }
         
         // Update employee status display
@@ -1272,42 +1295,7 @@
             }
         }
         
-        // Enhanced showEmployeeInterface to load departments
-        const originalShowEmployeeInterface = showEmployeeInterface;
-        function showEmployeeInterface() {
-            originalShowEmployeeInterface();
-            loadDepartmentDropdown();
-            updateEmployeeDepartmentDisplay();
-        }
-        
-        // Enhanced WebSocket handling for real-time department updates
-        const originalConnectWebSocket = connectWebSocket;
-        function connectWebSocket() {
-            originalConnectWebSocket();
-            
-            // Add department update listener
-            if (socket) {
-                socket.on('state', (data) => {
-                    if (currentEmployee && data.employees) {
-                        // Find updated employee data
-                        const updatedEmployee = data.employees.find(emp => emp.id === currentEmployee.id);
-                        if (updatedEmployee) {
-                            const oldDepartment = currentEmployee.department_id;
-                            currentEmployee = updatedEmployee;
-                            
-                            // Update UI if department changed
-                            if (oldDepartment !== updatedEmployee.department_id) {
-                                const select = document.getElementById('department-select');
-                                select.value = updatedEmployee.department_id || '';
-                                updateEmployeeDepartmentDisplay();
-                            }
-                            
-                            updateEmployeeStatus();
-                        }
-                    }
-                });
-            }
-        }
+
     </script>
 </body>
 </html>
