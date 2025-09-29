@@ -128,6 +128,25 @@ app.put('/api/employee-department', (req, res) => {
     const { employeeId, departmentId } = req.body;
     console.log('Employee department update:', { employeeId, departmentId });
     
+    // Validate input
+    if (!employeeId) {
+      return res.status(400).json({ error: 'Employee ID is required' });
+    }
+    
+    // Check if employee exists
+    const employee = db.prepare('SELECT id FROM employees WHERE id = ?').get(employeeId);
+    if (!employee) {
+      return res.status(404).json({ error: 'Employee not found' });
+    }
+    
+    // Check if department exists (if departmentId is provided)
+    if (departmentId) {
+      const department = db.prepare('SELECT id FROM departments WHERE id = ?').get(departmentId);
+      if (!department) {
+        return res.status(404).json({ error: 'Department not found' });
+      }
+    }
+    
     // Update employee table directly (for mobile app)
     db.prepare('UPDATE employees SET department_id = ? WHERE id = ?').run(departmentId, employeeId);
     
@@ -162,6 +181,33 @@ app.post('/api/login', async (req,res)=>{
 app.get('/api/me', auth, (req,res)=>{
   const user = db.prepare('SELECT username, role FROM users WHERE id=?').get(req.user.id);
   res.json(user);
+});
+
+// Token verification endpoint
+app.get('/api/verify-token', (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ valid: false, error: 'No token provided' });
+    }
+    
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = db.prepare('SELECT username, role FROM users WHERE id=?').get(decoded.id);
+    
+    if (!user) {
+      return res.status(401).json({ valid: false, error: 'User not found' });
+    }
+    
+    res.json({ 
+      valid: true, 
+      user: { 
+        username: user.username, 
+        role: user.role 
+      } 
+    });
+  } catch (error) {
+    res.status(401).json({ valid: false, error: 'Invalid token' });
+  }
 });
 
 // Protected CRUD
