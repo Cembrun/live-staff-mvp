@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html><head><title>Debug</title></head><body>
+<h1>Mobile Debug - Simple Test</h1>
+<button onclick="test()">Test All</button>
+<div id="result"></div>
+<script>
+async function test() {
+    const result = document.getElementById('result');
+    result.innerHTML = 'Testing...<br>';
+    
+    // Test 1: API Base
+    const apiBase = window.location.origin + '/api';
+    result.innerHTML += 'API Base: ' + apiBase + '<br>';
+    
+    // Test 2: Login
+    try {
+        const loginRes = await fetch(apiBase + '/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username: 'admin', password: 'admin123'})
+        });
+        result.innerHTML += 'Login Status: ' + loginRes.status + '<br>';
+        
+        if (loginRes.ok) {
+            const loginData = await loginRes.json();
+            result.innerHTML += 'Login Token: YES<br>';
+            localStorage.setItem('token', loginData.token);
+            
+            // Test 3: Data Load
+            const token = loginData.token;
+            const [empRes, deptRes] = await Promise.all([
+                fetch(apiBase + '/employees', {headers: {'Authorization': 'Bearer ' + token}}),
+                fetch(apiBase + '/departments', {headers: {'Authorization': 'Bearer ' + token}})
+            ]);
+            
+            result.innerHTML += 'Employees Status: ' + empRes.status + '<br>';
+            result.innerHTML += 'Departments Status: ' + deptRes.status + '<br>';
+            
+            const employees = await empRes.json();
+            const departments = await deptRes.json();
+            
+            result.innerHTML += 'Employees Count: ' + employees.length + '<br>';
+            result.innerHTML += 'Departments Count: ' + departments.length + '<br>';
+            result.innerHTML += 'Employees: ' + JSON.stringify(employees) + '<br>';
+            result.innerHTML += 'Departments: ' + JSON.stringify(departments) + '<br>';
+            
+        } else {
+            result.innerHTML += 'Login FAILED<br>';
+        }
+    } catch (error) {
+        result.innerHTML += 'ERROR: ' + error.message + '<br>';
+    }
+}
+</script>
+</body></html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📱 Live Staff Mobile - FIXED</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #f0f0f0; 
+            padding: 20px; 
+            margin: 0;
+        }
+        .container { max-width: 400px; margin: 0 auto; }
+        .card { 
+            background: white; 
+            padding: 20px; 
+            margin: 10px 0; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; text-align: center; }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 8px 0; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            box-sizing: border-box;
+        }
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        button:hover { background: #0056b3; }
+        .hidden { display: none; }
+        .employee-card { 
+            background: #f8f9fa; 
+            padding: 10px; 
+            margin: 5px 0; 
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .department-card {
+            background: #e9ecef;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        .status { 
+            position: fixed; 
+            top: 10px; 
+            right: 10px; 
+            background: #28a745; 
+            color: white; 
+            padding: 5px 10px; 
+            border-radius: 15px; 
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status">📱 MOBILE FIXED</div>
+    
+    <div class="container">
+        <!-- Login Section -->
+        <div id="login-section" class="card">
+            <h1>🔐 Anmeldung</h1>
+            <div id="login-error" class="hidden" style="color: red; margin: 10px 0;"></div>
+            <input type="text" id="username" placeholder="Benutzername" value="admin">
+            <input type="password" id="password" placeholder="Passwort" value="admin123">
+            <button onclick="login()">Anmelden</button>
+        </div>
+
+        <!-- Main App -->
+        <div id="main-section" class="hidden">
+            <div class="card">
+                <h1>👥 Live Staff Dashboard</h1>
+                <div id="user-info">Angemeldet als: <span id="username-display"></span></div>
+                <button onclick="logout()">Abmelden</button>
+                <button onclick="loadData()">🔄 Daten neu laden</button>
+            </div>
+
+            <!-- Data Display -->
+            <div class="card">
+                <h3>📊 Statistiken</h3>
+                <div>Mitarbeiter: <span id="employee-count">0</span></div>
+                <div>Bereiche: <span id="department-count">0</span></div>
+            </div>
+
+            <!-- Employees -->
+            <div class="card">
+                <h3>👥 Mitarbeiter</h3>
+                <div id="employees-list"></div>
+            </div>
+
+            <!-- Departments -->
+            <div class="card">
+                <h3>🏢 Bereiche</h3>
+                <div id="departments-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const API_BASE = window.location.origin + '/api';
+        let currentUser = null;
+        let socket = null;
+
+        console.log('📱 Mobile Fixed Version Loading...');
+        console.log('API_BASE:', API_BASE);
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            console.log('🔐 Attempting login...');
+            
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.token);
+                    currentUser = data.user;
+                    console.log('✅ Login successful');
+                    showMainApp();
+                    connectSocket();
+                    loadData();
+                } else {
+                    showError('Anmeldung fehlgeschlagen');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Verbindungsfehler');
+            }
+        }
+
+        function showMainApp() {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('main-section').classList.remove('hidden');
+            document.getElementById('username-display').textContent = currentUser.username;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('login-error');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => errorDiv.classList.add('hidden'), 3000);
+        }
+
+        async function loadData() {
+            console.log('📊 Loading data...');
+            const token = localStorage.getItem('token');
+            
+            try {
+                const [employeesRes, deptsRes] = await Promise.all([
+                    fetch(`${API_BASE}/employees`, { headers: { 'Authorization': `Bearer ${token}` }}),
+                    fetch(`${API_BASE}/departments`, { headers: { 'Authorization': `Bearer ${token}` }})
+                ]);
+
+                const employees = await employeesRes.json();
+                const departments = await deptsRes.json();
+                
+                console.log('Employees:', employees.length);
+                console.log('Departments:', departments.length);
+                
+                // Update counts
+                document.getElementById('employee-count').textContent = employees.length;
+                document.getElementById('department-count').textContent = departments.length;
+                
+                // Display employees
+                const employeesList = document.getElementById('employees-list');
+                employeesList.innerHTML = employees.map(emp => 
+                    `<div class="employee-card">
+                        <strong>${emp.name}</strong><br>
+                        Status: ${emp.status || 'Verfügbar'}
+                    </div>`
+                ).join('');
+                
+                // Display departments
+                const departmentsList = document.getElementById('departments-list');
+                departmentsList.innerHTML = departments.map(dept => 
+                    `<div class="department-card">
+                        <strong>🏢 ${dept.name}</strong><br>
+                        Kapazität: ${dept.capacity || 0}
+                    </div>`
+                ).join('');
+                
+            } catch (error) {
+                console.error('Data loading error:', error);
+                showError('Fehler beim Laden der Daten');
+            }
+        }
+
+        function connectSocket() {
+            console.log('🔌 Connecting Socket.IO...');
+            const token = localStorage.getItem('token');
+            
+            socket = io(window.location.origin, { 
+                auth: { token: token }
+            });
+
+            socket.on('connect', () => {
+                console.log('✅ Socket connected');
+            });
+
+            socket.on('state', (data) => {
+                console.log('📩 State update received');
+                if (data.employees || data.departments) {
+                    loadData();
+                }
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            currentUser = null;
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('main-section').classList.add('hidden');
+            if (socket) socket.disconnect();
+        }
+
+        // Check if already logged in
+        window.addEventListener('load', async () => {
+            console.log('📱 Page loaded, checking token...');
+            const token = localStorage.getItem('token');
+            
+            if (token) {
+                try {
+                    const response = await fetch(`${API_BASE}/user-info`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        currentUser = data;
+                        console.log('✅ Token valid, showing main app');
+                        showMainApp();
+                        connectSocket();
+                        loadData();
+                    } else {
+                        console.log('❌ Invalid token, showing login');
+                        localStorage.removeItem('token');
+                    }
+                } catch (error) {
+                    console.error('Token verification failed:', error);
+                    localStorage.removeItem('token');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

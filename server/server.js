@@ -43,6 +43,16 @@ try {
   console.log('Database already exists or initialization skipped');
 }
 
+// Middleware
+app.use(cors({
+  origin: [process.env.ORIGIN || 'http://localhost:5173', 'http://localhost:5174'],
+  credentials: true
+}));
+app.use(express.json());
+
+// Static files - serve HTML files from public directory (always active)
+app.use(express.static(join(__dirname, 'public')));
+
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(join(__dirname, 'public')));
@@ -52,9 +62,6 @@ if (process.argv.includes('--init-db')){
   initDb(); console.log('DB initialized.'); process.exit(0);
 }
 initDb();
-
-app.use(cors({ origin: [process.env.ORIGIN || 'http://localhost:5174', 'http://localhost:5173'], credentials: true }));
-app.use(express.json());
 
 function auth(req,res,next){
   const token = (req.headers.authorization||'').replace('Bearer ','').trim();
