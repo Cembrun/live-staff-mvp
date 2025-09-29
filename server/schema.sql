@@ -15,7 +15,9 @@ CREATE TABLE IF NOT EXISTS employees(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
   radio TEXT DEFAULT '',
-  status TEXT DEFAULT 'active'
+  status TEXT DEFAULT 'active',
+  department_id INTEGER,
+  FOREIGN KEY(department_id) REFERENCES departments(id) ON DELETE SET NULL
 );
 CREATE TABLE IF NOT EXISTS assignments(
   id INTEGER PRIMARY KEY AUTOINCREMENT,

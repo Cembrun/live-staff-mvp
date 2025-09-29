@@ -30,6 +30,20 @@ export function initDb(){
     db.prepare('INSERT INTO users (username,password_hash,role) VALUES (?,?,?)').run('Bell',bellHash,'viewer');
   }
   
+  // Migration: Add department_id column to employees if it doesn't exist
+  try {
+    const tableInfo = db.prepare("PRAGMA table_info(employees)").all();
+    const hasDepartmentId = tableInfo.some(column => column.name === 'department_id');
+    
+    if (!hasDepartmentId) {
+      console.log('🔄 Migrating database: Adding department_id column to employees table...');
+      db.prepare('ALTER TABLE employees ADD COLUMN department_id INTEGER REFERENCES departments(id) ON DELETE SET NULL').run();
+      console.log('✅ Migration completed: department_id column added to employees table');
+    }
+  } catch (error) {
+    console.log('📊 Database migration info:', error.message);
+  }
+  
   // Don't auto-create departments - let user create their own
   // Don't auto-create employees - let user create their own
   
