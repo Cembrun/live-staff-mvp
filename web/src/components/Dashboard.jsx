@@ -10,9 +10,10 @@ export default function Dashboard({ state, api, user }){
 
   const byEmp = useMemo(()=>{
     const m = new Map();
-    assignments.forEach(a=> m.set(a.employee_id, a.department_id));
+    // Use department_id directly from employees table (mobile app compatibility)
+    employees.forEach(emp => m.set(emp.id, emp.department_id));
     return m;
-  }, [assignments]);
+  }, [employees]);
 
   const empByDept = useMemo(()=>{
     const map = new Map();
