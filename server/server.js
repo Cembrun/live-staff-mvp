@@ -91,6 +91,26 @@ app.get('/api/test', (req, res) => {
   });
 });
 
+// Employee endpoints (no auth required for employee login)
+app.get('/api/employees-list', (req, res) => {
+  const employees = db.prepare('SELECT id, name FROM employees').all();
+  res.json(employees);
+});
+
+app.post('/api/employee-login', (req, res) => {
+  const { employeeId } = req.body;
+  const employee = db.prepare('SELECT * FROM employees WHERE id = ?').get(employeeId);
+  if (!employee) return res.status(404).json({ error: 'Employee not found' });
+  res.json({ employee });
+});
+
+app.put('/api/employee-status', (req, res) => {
+  const { employeeId, status } = req.body;
+  db.prepare('UPDATE employees SET status = ? WHERE id = ?').run(status, employeeId);
+  pushState(); // Broadcast update to all clients
+  res.json({ ok: true });
+});
+
 // Auth
 app.post('/api/login', async (req,res)=>{
   const { username, password } = req.body;
