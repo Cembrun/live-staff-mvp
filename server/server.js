@@ -260,28 +260,54 @@ app.delete('/api/departments/:id', authAdmin, (req,res)=>{
 });
 
 app.post('/api/assign', authAdmin, (req,res)=>{
-  const { employee_id, department_id } = req.body;
-  
-  // Kapazitätsprüfung wenn zu einem Bereich zugewiesen wird
-  if (department_id) {
-    const dept = db.prepare('SELECT capacity FROM departments WHERE id=?').get(department_id);
-    if (dept && dept.capacity) {
-      const currentCount = db.prepare('SELECT COUNT(*) as count FROM assignments WHERE department_id=? AND employee_id != ?').get(department_id, employee_id).count;
-      if (currentCount >= dept.capacity) {
-        return res.status(400).json({error: `Bereich ist voll! Maximale Kapazität: ${dept.capacity}`});
+  try {
+    const { employee_id, department_id } = req.body;
+    console.log('Assign request:', { employee_id, department_id });
+    
+    // Validate input
+    if (!employee_id) {
+      return res.status(400).json({error: 'Employee ID is required'});
+    }
+    
+    // Check if employee exists
+    const employee = db.prepare('SELECT id FROM employees WHERE id = ?').get(employee_id);
+    if (!employee) {
+      return res.status(404).json({error: 'Employee not found'});
+    }
+    
+    // Check if department exists (if department_id is provided)
+    if (department_id) {
+      const department = db.prepare('SELECT id, capacity FROM departments WHERE id = ?').get(department_id);
+      if (!department) {
+        return res.status(404).json({error: 'Department not found'});
+      }
+      
+      // Kapazitätsprüfung
+      if (department.capacity) {
+        const currentCount = db.prepare('SELECT COUNT(*) as count FROM assignments WHERE department_id=? AND employee_id != ?').get(department_id, employee_id).count;
+        if (currentCount >= department.capacity) {
+          return res.status(400).json({error: `Bereich ist voll! Maximale Kapazität: ${department.capacity}`});
+        }
       }
     }
+    
+    // Update assignments table (for desktop app)
+    const row = db.prepare('SELECT id FROM assignments WHERE employee_id=?').get(employee_id);
+    if (row) {
+      db.prepare('UPDATE assignments SET department_id=?, assigned_at=CURRENT_TIMESTAMP WHERE id=?').run(department_id, row.id);
+    } else {
+      db.prepare('INSERT INTO assignments (employee_id, department_id) VALUES (?,?)').run(employee_id, department_id);
+    }
+    
+    // Also update employee table directly (for mobile app sync)
+    db.prepare('UPDATE employees SET department_id = ? WHERE id = ?').run(department_id, employee_id);
+    
+    pushState(); 
+    res.json({ ok:true });
+  } catch (error) {
+    console.error('Assign error:', error);
+    res.status(500).json({error: 'Database error: ' + error.message});
   }
-  
-  // Update assignments table (for desktop app)
-  const row = db.prepare('SELECT id FROM assignments WHERE employee_id=?').get(employee_id);
-  if (row) db.prepare('UPDATE assignments SET department_id=?, assigned_at=CURRENT_TIMESTAMP WHERE id=?').run(department_id, row.id);
-  else db.prepare('INSERT INTO assignments (employee_id, department_id) VALUES (?,?)').run(employee_id, department_id);
-  
-  // Also update employee table directly (for mobile app sync)
-  db.prepare('UPDATE employees SET department_id = ? WHERE id = ?').run(department_id, employee_id);
-  
-  pushState(); res.json({ ok:true });
 });
 app.post('/api/status', authAdmin, (req,res)=>{
   const { employee_id, status } = req.body;
@@ -372,8 +398,16 @@ app.post('/api/autoAssign', authAdmin, (req,res)=>{
 });
 
 app.post('/api/reset', authAdmin, (req,res)=>{
-  db.prepare('UPDATE assignments SET department_id=NULL').run();
-  pushState(); res.json({ ok:true });
+  try {
+    console.log('Reset request received');
+    db.prepare('UPDATE assignments SET department_id=NULL').run();
+    db.prepare('UPDATE employees SET department_id=NULL').run(); // Also reset employee table
+    pushState(); 
+    res.json({ ok:true });
+  } catch (error) {
+    console.error('Reset error:', error);
+    res.status(500).json({error: 'Database error: ' + error.message});
+  }
 });
 
 io.use((socket,next)=>{
